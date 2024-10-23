@@ -53,7 +53,7 @@ export const Register = async (req, res, next) => {
       const payload = { userId: user._id, role: user.roles[0] }; 
       const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
     
-      res.cookie('access_token', token, { httpOnly: true }); 
+      res.cookie('access', token); 
       res.status(200).json({ message: 'Login successful', Detail : user.email, });
     } catch (err) {
       console.error(err);
@@ -67,7 +67,7 @@ export const Register = async (req, res, next) => {
         const users = await User.find(); // Fetch all users from the database
         res.status(200).json(users); // Respond with the users data
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        res.status(500).json({ message: 'Server  error', error: error.message });
     }
 };
   export const getUser = async (req, res) => {
@@ -76,6 +76,6 @@ export const Register = async (req, res, next) => {
         const users = await User.findById(req.params.id); // Fetch all users from the database
         res.status(200).json(users); // Respond with the users data
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        res.status(500).json({ message: 'Server is basit error', error: error.message });
     }
 };

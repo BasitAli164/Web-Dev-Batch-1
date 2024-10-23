@@ -5,8 +5,6 @@ const userSchema = new mongoose.Schema(
   
       username: {
           type: String,
-          required: true,
-          unique: true,
           trim: true
       },
       email: {
@@ -22,24 +20,31 @@ const userSchema = new mongoose.Schema(
       },
       firstName: {
           type: String,
-          required: true,
+        //   required: true,
           trim: true
       },
       lastName: {
           type: String,
-          required: true,
+        //   required: true,
           trim: true
       },
       address: String,
       phone: Number,
       roles: {
           type: [String],
-          default: ['user']
+          default: 'user'
       },
       dateOfBirth: {
           type: String
       },
 
+      wishlist:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Product',
+            default: null
+          },
+      ]
     }
 );
 

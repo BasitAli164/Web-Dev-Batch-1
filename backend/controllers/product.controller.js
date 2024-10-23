@@ -4,7 +4,7 @@ import { SubCategory } from "../models/productModel.js";
 // Add new product with image upload
 export const addProduct = async (req, res, next) => {
   const { name, description, category,color,price,size,stock,sku,brand  } = req.body;
-
+console.log("API Triggerred")
   try {
     // Handle image upload if present
     let images = [];
@@ -34,20 +34,7 @@ export const addProduct = async (req, res, next) => {
 };
 
 
-    // const {name,description,category,...others}=req.body;
-
-    // try {
-    //     const productDetail=req.body;
-    //     res.status(200).json({
-    //         message:"Product are:",
-    //         data:productDetail
-    //     })
-        
-    // } catch (error) {
-    //     console.log(error)
-    // }
-        
-
+    
 // Get product by ID
 export const getProductById = async (req, res, next) => {
   try {

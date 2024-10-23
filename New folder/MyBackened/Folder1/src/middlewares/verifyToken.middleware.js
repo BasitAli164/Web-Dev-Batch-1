@@ -1,19 +1,23 @@
 import jwt from "jsonwebtoken";
-import { createError } from "../utils/error.js";
+import { createError } from "../utils/error.utitls.js";
 
 export const verifyToken = (req, res, next) => {
-  const access_token = req.cookies.access;
+  const access_token = req.cookies.acccess;
+  console.log("Access token is :",access_token)
+
   
   if (!access_token) {
     return next(createError(401, "You are not authenticated!"));
   }
 
   // No need to substring; check if the token directly exists in the cookie.
+  
   const token = access_token;
+  console.log("Token:",token )
   
 
   // Verify the token using the secret
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+  jwt.verify(token, process.env.SECRET, (err, user) => {
     if (err) {
       return next(createError(403, "Token is not valid!"));
     }
