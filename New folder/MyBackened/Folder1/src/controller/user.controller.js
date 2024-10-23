@@ -194,12 +194,3 @@ export const deleteAllUser=async(req,res,next)=>{
   }
 
 }
-export const userWish=async(res,req,next)=>{
-  const {userId,productId}=req.params;
-
-  try {
-    
-  } catch (error) {
-    
-  }
-}
