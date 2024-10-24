@@ -1,5 +1,5 @@
 import express from 'express'
-import { delUserbyId, login, register, updateUserbyId, viewAllUser, viewUserbyId } from '../controller/user.controller.js'
+import { addWishlist, delUserbyId, login, register, removeWishlist, updateUserbyId, viewAllUser, viewUserbyId } from '../controller/user.controller.js'
 
 
 const router=express.Router()
@@ -10,5 +10,6 @@ router.get('/get/:id',viewUserbyId)
 router.get('/get',viewAllUser)
 router.delete('/del/:id',delUserbyId)
 router.put('/update/:id',updateUserbyId)
+
 
 export default  router

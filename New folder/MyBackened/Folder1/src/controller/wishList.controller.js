@@ -1,9 +1,9 @@
 import User from '../model/user.model.js'
-export const addWishlist=async(res,req,next)=>{
+export const addWishlist=async(req,res,next)=>{
     const {userId,productId}=req.params;
   
     try {
-      const updateUser=new User.findByIdAndUpdate(
+      const updateUser=await User.findByIdAndUpdate(
         userId,
         {
           $addToSet:{wishList:productId} // Adds prodId only if it's not already in the array
@@ -35,10 +35,10 @@ export const addWishlist=async(res,req,next)=>{
       
     }
   }
-  export const removeWishlist=async(res,req,next)=>{
-  const {userId,productId}=req.body;
+  export const removeWishlist=async(req,res,next)=>{
+  const {userId,productId}=req.params;
   try {
-    const deleteWishList=new User.findByIdAndUpdate(
+    const deleteWishList=await User.findByIdAndUpdate(
       userId,
       {
         $pull:{wishList:productId}// Removes prodId from the array
@@ -56,16 +56,15 @@ export const addWishlist=async(res,req,next)=>{
     }
     
     res.status(200).json({
-      status:200,
-      message:"WishList remove successfully.....",
+      message:`Wishlist Successfully Removed which Id is:${userId}`,
     })
     
   } catch (error) {
     console.log(error.message);
     res.status(500).json({
-      status:500,
-      message:`Wishlist Successfully Removed which Id is:${userId}`,
-      data:deleteWishList
+      message:"Server side error",
+      err:error.message,
+
     })
     
   }

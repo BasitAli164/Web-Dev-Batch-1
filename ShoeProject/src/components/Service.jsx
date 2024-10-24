@@ -1,10 +1,10 @@
-import React, { useState, useEffect,useContext } from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, Card, CardMedia, CardContent, Grid, styled, IconButton } from '@mui/material';
-import { useSearchParams, useNavigate } from 'react-router-dom'; // For URL handling and navigation
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'; // New Icon Import
+import { useNavigate, useSearchParams } from 'react-router-dom'; // For URL handling and navigation
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'; // Shopping Cart Icon Import
+import FavoriteIcon from '@mui/icons-material/Favorite'; // Wish Icon Import
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'; // Inactive Wish Icon Import
 import { useCart } from './Context.jsx';
-
-
 
 // Styled components
 const Thumbnail = styled('img')(({ theme }) => ({
@@ -72,48 +72,53 @@ const CustomSwitch = styled('div')(({ theme, isMenSelected }) => ({
   },
 }));
 
-
 const Service = () => {
-  const {item}=useCart()
-  console.log('items in Severice',item)
+  const { item } = useCart();
   const [isMenSelected, setIsMenSelected] = useState(true);
   const [hoveredImage, setHoveredImage] = useState({}); // Tracks the hovered image for each card
-  const navigate = useNavigate()
-
+  const [wishStatus, setWishStatus] = useState({}); // Tracks the wish status of each product
+  const navigate = useNavigate();
 
   // URL Search Params (for filters)
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedSize = searchParams.get('size') || '';
   const selectedColor = searchParams.get('color') || '';
 
-
   const colors = ['Grey', 'Black', 'Beige', 'Blue', 'Red', 'White', 'Gray', 'Purple'];
- 
 
   const filteredProducts = item.filter(product =>
     product.category === (isMenSelected ? 'men' : 'women') &&
     (selectedSize ? product.availableSizes.includes(selectedSize) : true) &&
     (selectedColor ? product.color === selectedColor : true)
   );
+
   const updateSearchParams = (newSize, newColor) => {
     const params = {};
     if (newSize) params.size = newSize;
     if (newColor) params.color = newColor;
     setSearchParams(params);
-
-
   };
 
   const resetFilters = () => {
     setSearchParams({}); // Clear URL parameters
   };
-  
 
   const handleThumbnailClick = (productId, image) => {
     setHoveredImage(prevState => ({ ...prevState, [productId]: image }));
   };
+
   const handleAddToCart = (product) => {
-    navigate(`/service/product/${product.id}` )
+    navigate(`/service/product/${product.id}`);
+  };
+
+  // Handle Wish Icon Click
+  const handleWishIconClick = (productId) => {
+    setWishStatus(prevState => ({ ...prevState, [productId]: true }));
+
+    // Set back to false after 1 second
+    setTimeout(() => {
+      setWishStatus(prevState => ({ ...prevState, [productId]: false }));
+    }, 1000);
   };
 
   return (
@@ -123,27 +128,24 @@ const Service = () => {
 
         {/* Sizes */}
         <Typography variant="h6" mt={2}>Sizes</Typography>
-        <Typography   >Select Your Size.....</Typography>
-        
-        <Box display="flex" flexWrap="wrap" mb={2} m={5} >
+        <Typography>Select Your Size.....</Typography>
+        <Box display="flex" flexWrap="wrap" mb={2} m={5}>
           {['5', '6', '7', '8', '9', '10', '11', '12', '13'].map(size => (
             <Box
               key={size}
               sx={{
                 backgroundColor: size === selectedSize ? '#000' : 'grey',
-                color:size===selectedSize ? "#fff":'#ddd',
+                color: size === selectedSize ? '#fff' : '#ddd',
                 border: '1px solid #ddd',
                 borderRadius: '4px',
                 padding: '8px',
                 marginRight: '12px',
-                marginTop:"15px",
+                marginTop: '15px',
                 cursor: 'pointer',
                 textAlign: 'center',
                 '&:hover': { backgroundColor: '#ccc' },
-               
               }}
               onClick={() => updateSearchParams(size, selectedColor)}
-             
             >
               {size}
             </Box>
@@ -152,12 +154,13 @@ const Service = () => {
 
         {/* Colors */}
         <Typography variant="h6" mt={2}>Color Base</Typography>
-        <Typography   >Select Your Color.....</Typography>
-
+        <Typography>Select Your Color.....</Typography>
         <Box display="flex" flexDirection="row" flexWrap="wrap" mb={2} m={5}>
           {colors.map(color => (
             <Box key={color} display="flex" alignItems="center" onClick={() => updateSearchParams(selectedSize, color)}>
-              <Box sx={{ backgroundColor: color, width: '20px', height: '20px', borderRadius: '50%',  cursor: 'pointer', border: '1px solid #ddd', marginLeft:"22px",marginRight:"22px", marginTop:"15px" ,marginBottom:"15px"}} />
+              <Box
+                sx={{ backgroundColor: color, width: '20px', height: '20px', borderRadius: '50%', cursor: 'pointer', border: '1px solid #ddd', marginLeft: '22px', marginRight: '22px', marginTop: '15px', marginBottom: '15px' }}
+              />
               <Typography variant="body2" style={{ color: selectedColor === color ? color : 'inherit' }}>{color}</Typography>
             </Box>
           ))}
@@ -203,7 +206,7 @@ const Service = () => {
                 <CardMedia
                   component="img"
                   height="200"
-                  image={hoveredImage[product.id] || product.images[0]} 
+                  image={hoveredImage[product.id] || product.images[0]}
                   alt={product.title}
                 />
                 <CardContent>
@@ -219,10 +222,19 @@ const Service = () => {
                       />
                     ))}
                   </Box>
-                  {/* Updated Icon Button for Product Details */}
-                  <IconButton onClick={() => handleAddToCart(product)} sx={{ position: 'absolute', top: '10px', right: '10px' }}>
-  <AddShoppingCartIcon />
-</IconButton>
+                  <Box mt={2} display="flex" justifyContent="space-between">
+                    <IconButton color="gray" onClick={() => handleAddToCart(product)} sx={{position:"absolute",top:"10px",right:"10px"}}>
+                      <AddShoppingCartIcon />
+                    </IconButton>
+                    <IconButton
+                      color={wishStatus[product.id] ? '#ff0000' : 'inherit'}  
+                       onClick={() => handleWishIconClick(product.id)}
+                      disabled={wishStatus[product.id]}
+                      sx={{position:"absolute",top:"10px",left:"10px"}}
+                    >
+                      {wishStatus[product.id] ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                    </IconButton>
+                  </Box>
                 </CardContent>
               </StyledCard>
             </Grid>

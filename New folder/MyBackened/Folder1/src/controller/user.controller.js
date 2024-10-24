@@ -81,7 +81,7 @@ export const login=async(req,res)=>{
 export const viewUserbyId = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const user = await User.findById(id);
+    const user = await User.findById(id).populate('wishList');
     if (!user) {
       return res.status(404).json({
         status: 404,
@@ -95,8 +95,8 @@ export const viewUserbyId = async (req, res, next) => {
     });
   } catch (error) {
     return res.status(500).json({
-      status: 500,
-      message: "Server side error",
+      // status: 500,
+      message: error.message,
       err: error,
     });
   }
@@ -160,7 +160,7 @@ export const delUserbyId = async (req, res, next) => {
 
 export const viewAllUser=async(req,res,next)=>{
     try {
-        const allUser=await User.find()
+        const allUser=await User.find().populate('wishList')
         if(!allUser){
             return res.status(400).json({
                 status:400,
@@ -193,4 +193,75 @@ export const deleteAllUser=async(req,res,next)=>{
     
   }
 
+}
+export const addWishlist=async(res,req,next)=>{
+  const {userId,productId}=req.params;
+
+  try {
+    const updateUser=new User.findByIdAndUpdate(
+      userId,
+      {
+        $addToSet:{wishList:productId} // Adds prodId only if it's not already in the array
+      },
+      {
+        new:true
+
+      }
+    )
+    if(!updateUser){
+      return res.status(404).json({
+        status:404,
+        message:"User not Found",
+      })
+    }
+    res.status(201).json({
+      status:201,
+      message:"WishList add successfully.....",
+      userDetail:updateUser
+    })
+    
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      status:500,
+      message:"Server side error",
+      err:error.message,
+    })
+    
+  }
+}
+export const removeWishlist=async(res,req,next)=>{
+const {userId,productId}=req.body;
+try {
+  const deleteWishList=new User.findByIdAndUpdate(
+    userId,
+    {
+      $pull:{wishList:productId}// Removes prodId from the array
+    },
+    {
+      new:true
+    }
+
+  );
+  if(!deleteWishList){
+    return res.status(404).json({
+      status:404,
+      message:"User not Found",
+    })
+  }
+  
+  res.status(200).json({
+    status:200,
+    message:"WishList remove successfully.....",
+  })
+  
+} catch (error) {
+  console.log(error.message);
+  res.status(500).json({
+    status:500,
+    message:`Wishlist Successfully Removed which Id is:${userId}`,
+    data:deleteWishList
+  })
+  
+}
 }

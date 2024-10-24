@@ -132,7 +132,8 @@ const Header = () => {
             onClose={handleProfileMenuClose}
           >
             <MenuItem onClick={() => navigate('/login')}>Login</MenuItem>
-            <MenuItem onClick={() => navigate('/signup')}>Signup</MenuItem>
+            <MenuItem onClick={() => navigate('/profile')}>Profile</MenuItem>
+
           </Menu>
         </Box>
       </Toolbar>

@@ -3,7 +3,7 @@ import { addWishlist, removeWishlist } from '../controller/wishList.controller.j
 
 const wishRoute=express.Router();
 
-wishRoute.post('/addWish',addWishlist);
-wishRoute.delete('/delWish',removeWishlist)
+wishRoute.post('/addWish/:userId/:productId',addWishlist);
+wishRoute.delete('/delWish/:userId/:productId',removeWishlist)
 
 export default wishRoute;
