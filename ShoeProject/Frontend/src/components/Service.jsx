@@ -1,11 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Box, Typography, Card, CardMedia, CardContent, Grid, styled, IconButton } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import { useAuth } from '../context/AuthContext.jsx'; // Import AuthContext
-import useData from '../store/Store.jsx';
-import { useCart } from '../context/CartContext.jsx';
-import { useProduct } from '../context/ProductContext.jsx';
+import { useProductStore } from '../context/ProductContext.jsx';
 
 // Styled components
 const Thumbnail = styled('img')(({ theme }) => ({
@@ -75,7 +72,7 @@ const CustomSwitch = styled('div')(({ theme, isMenSelected }) => ({
 }));
 
 const Service = () => {
-  const {products}=useProduct();
+  const {products,fetchData}=useProductStore();
   const [isMenSelected, setIsMenSelected] = useState(true);
   const [hoveredImage, setHoveredImage] = useState({});
   const navigate = useNavigate();
@@ -83,12 +80,19 @@ const Service = () => {
   const selectedSize = searchParams.get('size') || '';
   const selectedColor = searchParams.get('color') || '';
   const colors = ['Grey', 'Black', 'Beige', 'Blue', 'Red', 'White', 'Gray', 'Purple'];
+  console.log(products.productDetail,'product')
+  const productDetail = products.productDetail;// to take only the array 
+  useEffect(() => {
+    fetchData(); // Fetch products from the backend
+  }, []);
 
-  const filteredProducts = products.filter(product =>
+
+  const filteredProducts =Array.isArray( productDetail)? productDetail.filter(product =>
     product.category === (isMenSelected ? 'men' : 'women') &&
     (selectedSize ? product.availableSizes.includes(selectedSize) : true) &&
     (selectedColor ? product.color === selectedColor : true)
-  );
+  ):[];
+  console.log("filteredProducts are",filteredProducts)  
 
   const updateSearchParams = (newSize, newColor) => {
     const params = {};
@@ -106,7 +110,7 @@ const Service = () => {
   };
 
   const handleAddToCart = (product) => {
-    navigate(`/service/product/${product.id}`);
+    navigate(`/service/product/${product._id}`);
   };
 
   return (
@@ -187,17 +191,17 @@ const Service = () => {
 
         <Grid container spacing={2}>
           {filteredProducts.map(product => (
-            <Grid item xs={12} sm={6} md={4} key={product.id}>
-              <StyledCard isHovered={true} onClick={() => navigate(`/service/product/${product.id}`)}>
+            <Grid item xs={12} sm={6} md={4} key={product._id}>
+              <StyledCard isHovered={true} onClick={() => navigate(`/service/product/${product._id}`)}>
                 <CardMedia
                   component="img"
                   height="200"
-                  image={hoveredImage[product.id] || product.images[0]}
-                  alt={product.title}
+                  image={hoveredImage[product._id] || product.images[0]}
+                  alt={product.productName}
                 />
                 <CardContent sx={{textAlign:'center'}}>
-                  <Typography variant="h6">{product.title}</Typography>
-                  <Typography variant="body2">{product.price} PKR</Typography>
+                  <Typography variant="h6">{product.productName}</Typography>
+                  <Typography variant="body2">{product.Subcategory.price} PKR</Typography>
 
 
                   <Box display="flex" justifyContent="space-between" mt={1}>

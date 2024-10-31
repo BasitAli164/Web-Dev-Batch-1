@@ -13,15 +13,14 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import { useCart } from '../context/CartContext';
-import { dummyProducts } from '../../public/Data';
+import { useCartStore } from '../context/CartContext';
 
 const CartPage = () => {
   const navigate = useNavigate();
-  const { cart, deleteItem, addItem } = useCart();
-  const { id } = useParams();
+  const { cart, deleteItem } = useCartStore();
   const location = useLocation();
   const quantity = location.state;
+  console.log('cart is :',cart)
 
 
   // Find the product to add
@@ -34,7 +33,7 @@ const CartPage = () => {
   // }, [productToAdd, cart, addItem, quantity]);
 
   const getSubtotal = () => {
-    return cart.reduce((acc, item) => acc + (parseFloat(item.price) * item.quantity), 0);
+    return cart.reduce((acc, item) => acc + (parseFloat(item.Subcategory.price) * item.quantity), 0);
   };
   console.log("Cart Items", cart); // Log the current cart items
 
@@ -62,7 +61,7 @@ const CartPage = () => {
         <Grid item xs={12} md={8}>
           {cart.map((item) => (
             <Card
-              key={item.id}
+              key={item._id}
               sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -77,16 +76,16 @@ const CartPage = () => {
             >
               <CardMedia
                 component="img"
-                alt={item.title}
+                alt={item.productName}
                 image={item.images && item.images.length > 0 ? item.images[0] : '/placeholder.png'}
                 sx={{ width: 120, height: 120, objectFit: 'contain', borderRadius: 2 }}
               />
               <CardContent sx={{ flex: 1, paddingLeft: 2 }}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                  {item.title}
+                  {item.productName}
                 </Typography>
                 <Typography variant="body1" sx={{ marginTop: 1 }}>
-                  Price: {item.price} PKR
+                  Price: {item.Subcategory.price} PKR
                 </Typography>
                 <Typography variant="body1" sx={{ marginTop: 1 }}>
                   Quantity: {item.quantity}
@@ -102,7 +101,7 @@ const CartPage = () => {
                     color: '#d00000',
                   },
                 }}
-                onClick={() => handleRemoveItem(item.id)}
+                onClick={() => handleRemoveItem(item._id)}
               >
                 <CloseIcon />
               </IconButton>

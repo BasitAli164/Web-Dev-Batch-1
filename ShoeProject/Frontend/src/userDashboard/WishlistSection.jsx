@@ -4,12 +4,13 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import RemoveIcon from '@mui/icons-material/Remove';
 import image1 from '../../public/image/card/card1/1.avif'
 import image2 from '../../public/image/card/card1/2.avif'
-import { useAuth } from '../context/AuthContext';
+import { useAuthStore } from '../context/AuthContext';
 
 const WishlistSection = () => {
-  const {productDetails,removeFromWishlist}=useAuth();
+  const {productDetails,removeFromWishlist}=useAuthStore();
   console.log("user from wishlist product details",productDetails);
   const {title,}=productDetails;
+  console.log("user from wishlist title",title)
   // Sample wishlist data - in a real app, this would be fetched from an API
   const wishlistItems = [
     {

@@ -5,7 +5,7 @@ import Reviwe from '../model/reviwe.model.js'
 
 export const addproduct=async(req,res,next)=>{
     const {productName,productDescription,category,brand,color,size,stock,price,rating,comment}=req.body;
-    // console.log("product Name",productName)
+    console.log("product Name",productName)
     
     try {
     let images=[];
@@ -37,7 +37,7 @@ console.log("images",req.files)
             productDescription,
             category,
             images,
-            subCategory:savedSubCategory,
+            Subcategory:savedSubCategory,
             review:saveReview,
 
         })
@@ -69,7 +69,7 @@ console.log("images",req.files)
 export const getProductById=async(req,res,next)=>{
     const {id}=req.params;
     try {
-        const product=await Product.findById(id).populate({path:"Subcategories",strictPopulate: false}).populate("review");
+        const product=await Product.findById(id).populate('Subcategory').populate("review");
         if(!product){
             res
             .status(404)
@@ -103,7 +103,7 @@ export const getProductById=async(req,res,next)=>{
 
 export const getProduct=async(req,res,next)=>{
     try {
-        const product=await Product.find().populate({ path: "SubCategory", strictPopulate: false }).populate("review");
+        const product=await Product.find().populate('Subcategory').populate("review");
         if(!product){
             res
             .status(404)

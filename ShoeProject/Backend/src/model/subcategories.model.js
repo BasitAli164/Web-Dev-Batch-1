@@ -9,7 +9,7 @@ const subCategorySchema=new mongoose.Schema({
         trime:true
     },
     size:{
-        type:String,
+        type:Number,
         trime:true
     },
     stock:{

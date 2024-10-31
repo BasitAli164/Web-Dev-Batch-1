@@ -14,11 +14,11 @@ import {
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
+import {useAuthStore}  from '../context/AuthContext';
 import { Email,  Visibility, VisibilityOff } from '@mui/icons-material'; // Import icons
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login } = useAuthStore();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

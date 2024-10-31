@@ -14,51 +14,32 @@ import AboutUsPage from './components/AboutUsPage';
 import Checkout from './components/Checkout';
 import Serarch from './components/Serarch';
 import UserDashboard from './userDashboard/UserDashboard';
-import { AuthProvider } from './context/AuthContext';
-import { ProductProvider } from './context/ProductContext';
-import { CartProvider } from './context/CartContext';
 
 
 
 
 const App = () => {
   return (
-<CartProvider>
-<ProductProvider>
-<Router>
-<AuthProvider> 
-
+    <Router>
       <Header />
       <Routes>
         {/* Define routes that point to existing components */}
-        <Route path="/" element={<Home/>} />
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/service" element={<Service/>} />
-        <Route path="/contact" element={<ContactPage/>} />
-        <Route path="/about" element={<AboutUsPage/>} />
+        <Route path="/service" element={<Service />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/about" element={<AboutUsPage />} />
         <Route path='/service/product/cart' element={<CartPage />} />
-        <Route path='/service/product/:id/Cart' element={<CartPage />} />  
+        <Route path='/service/product/:id/Cart' element={<CartPage />} />
         <Route path="/service/product/:id" element={<ProductDetail />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/search" element={<Serarch />} />
         <Route path="/profile" element={<UserDashboard />} />
-        {/* <Route path="/profile" element={<Profile />} /> */}
-
-
-
-
-
-
-        
       </Routes>
-      <Footer/>
-      </AuthProvider>
-
+      <Footer />
     </Router>
-    </ProductProvider>
-    </CartProvider>
-    
+
   );
 };
 

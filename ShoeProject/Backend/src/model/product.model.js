@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 const productSchema=new mongoose.Schema({
-    productname:{
+    productName:{
         type:String,
         trim:true,
         
@@ -19,7 +19,7 @@ const productSchema=new mongoose.Schema({
     },
     Subcategory:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'Subcategory'
+        ref:'SubCategory'
     },
     review:{
         type:mongoose.Schema.Types.ObjectId,

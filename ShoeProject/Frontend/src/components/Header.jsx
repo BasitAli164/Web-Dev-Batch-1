@@ -132,10 +132,10 @@ const Header = () => {
             }}
           >
             {isLoggedIn ? (
-              <>
-                <MenuItem onClick={() => { handleProfileMenuClose(); navigate('/profile'); }}>Profile</MenuItem>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
-              </>
+              [
+                <MenuItem key="profile" onClick={() => { handleProfileMenuClose(); navigate('/profile'); }}>Profile</MenuItem>,
+                <MenuItem key={"logout"} onClick={handleLogout}>Logout</MenuItem>
+              ]
             ) : (
               <MenuItem onClick={() => { handleProfileMenuClose(); handleLogin(); }}>Login</MenuItem>
             )}
@@ -155,3 +155,9 @@ const Header = () => {
 };
 
 export default Header;
+
+
+
+
+
+
