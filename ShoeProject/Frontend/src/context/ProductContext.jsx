@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-export const useProductStore = create((set) => ({
+export const useProductStore = create((set,get) => ({
   products: [],
   
   // Action to fetch products from backend
@@ -9,8 +9,8 @@ export const useProductStore = create((set) => ({
     try {
       const response = await axios.get('http://localhost:8000/api/product/get');
       set({ products: response.data });
-      console.log("product detail from backend",response.data)
-    } catch (error) {
+      
+     } catch (error) {
       console.error("Failed to fetch products:", error);
     }
   },

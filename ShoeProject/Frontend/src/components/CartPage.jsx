@@ -20,17 +20,9 @@ const CartPage = () => {
   const { cart, deleteItem } = useCartStore();
   const location = useLocation();
   const quantity = location.state;
-  console.log('cart is :',cart)
 
 
-  // Find the product to add
-  // const productToAdd = dummyProducts.find(product => product.id === parseInt(id));
 
-  // useEffect(() => {
-  //   if (productToAdd && !cart.some(item => item.id === productToAdd.id)) {
-  //     addItem(productToAdd, quantity); // Pass the quantity
-  //   }
-  // }, [productToAdd, cart, addItem, quantity]);
 
   const getSubtotal = () => {
     return cart.reduce((acc, item) => acc + (parseFloat(item.Subcategory.price) * item.quantity), 0);

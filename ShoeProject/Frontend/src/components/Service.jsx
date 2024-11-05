@@ -80,7 +80,6 @@ const Service = () => {
   const selectedSize = searchParams.get('size') || '';
   const selectedColor = searchParams.get('color') || '';
   const colors = ['Grey', 'Black', 'Beige', 'Blue', 'Red', 'White', 'Gray', 'Purple'];
-  console.log(products.productDetail,'product')
   const productDetail = products.productDetail;// to take only the array 
   useEffect(() => {
     fetchData(); // Fetch products from the backend
@@ -92,7 +91,6 @@ const Service = () => {
     (selectedSize ? product.availableSizes.includes(selectedSize) : true) &&
     (selectedColor ? product.color === selectedColor : true)
   ):[];
-  console.log("filteredProducts are",filteredProducts)  
 
   const updateSearchParams = (newSize, newColor) => {
     const params = {};
@@ -205,7 +203,7 @@ const Service = () => {
 
 
                   <Box display="flex" justifyContent="space-between" mt={1}>
-                    <IconButton onClick={() => handleAddToCart(product)} sx={{bottom:275,left:230}}>
+                    <IconButton onClick={() => handleAddToCart(product)} >
                       <AddShoppingCartIcon />
                     </IconButton>
                   </Box>

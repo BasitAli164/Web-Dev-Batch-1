@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
@@ -17,32 +17,40 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { useCartStore } from '../context/CartContext';
 import { useProductStore } from '../context/ProductContext';
+import { useAuthStore } from '../context/AuthContext';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const { addItem } = useCartStore();
   const { products } = useProductStore();
-  const productDetail = products.productDetail; // to take only the array
-  console.log("product in productDetail", productDetail);
+  const { user, removeFromWishlist, addToWishlist, productDetails } = useAuthStore();
+  const productDetail = products.productDetail;
   const navigate = useNavigate();
 
-  // Find the product with the matching ID from the item array
   const product = Array.isArray(productDetail) ? productDetail.find((product) => product._id.toString() === id) : null;
-
-  console.log("product in after find", product);
 
   if (!product) {
     return <Typography>No product found with the given ID.</Typography>;
   }
 
-  // Component state and event handlers
   const [modalOpen, setModalOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  const [isFavorite, setIsFavorite] = useState(false); // State for favorite toggle
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  // Check if the product is in the user's wishlist
+  useEffect(() => {
+    if (user) {
+      setIsFavorite(productDetails.some((item) => item._id === product._id));
+    }
+  }, [user, productDetails, product]);
 
   const handleAddToCart = () => {
-    setModalOpen(true);
-    addItem(product, quantity);
+    if (!user) {
+      navigate('/login');
+    } else {
+      setModalOpen(true);
+      addItem(product, quantity,user._id);
+    }
   };
 
   const incrementQuantity = () => {
@@ -56,24 +64,30 @@ const ProductDetail = () => {
   };
 
   const toggleFavorite = () => {
-    setIsFavorite((prev) => !prev); // Toggle the favorite state
+    if (isFavorite) {
+      removeFromWishlist(product._id, navigate);
+    } else {
+      addToWishlist(product._id, navigate);
+    }
+    setIsFavorite((prev) => !prev);
   };
 
-  // Function to handle Buy Now button
   const handleBuyNow = () => {
-    addItem(product, quantity);
-    // Navigate to the checkout or cart page (you can change the path as needed)
-    navigate(`/checkout`, { state: { product, quantity } });
+    if (!user) {
+      navigate('/login');
+    } else {
+      addItem(product, quantity);
+      navigate(`/checkout`, { state: { product, quantity } });
+    }
   };
 
   return (
     <Box sx={{ padding: 2, backgroundColor: '#f5f5f5', height: '130vh' }}>
-      {/* Main Image Row */}
       <Grid container spacing={2} sx={{ height: '40%' }}>
         <Grid item xs={12} sx={{ position: 'relative', borderRadius: '5px', overflow: 'hidden', height: '100%', padding: 2 }}>
           <Box
             component="img"
-            src={product.images[0]} // Directly display the first image from product.images
+            src={product.images[0]}
             alt={product.productName}
             sx={{
               width: '100%',
@@ -87,7 +101,6 @@ const ProductDetail = () => {
         </Grid>
       </Grid>
 
-      {/* Product Details Row */}
       <Box sx={{ marginTop: 2, backgroundColor: 'white', borderRadius: '5px', padding: 3, boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)', position: 'relative' }}>
         <IconButton
           onClick={toggleFavorite}
@@ -117,7 +130,6 @@ const ProductDetail = () => {
           Description: {product.productDescription}
         </Typography>
 
-        {/* Quantity Control */}
         <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2 }}>
           <Typography>Quantity:</Typography>
           <IconButton onClick={decrementQuantity} disabled={quantity <= 1}>
@@ -129,7 +141,6 @@ const ProductDetail = () => {
           </IconButton>
         </Box>
 
-        {/* Size Display */}
         <Typography variant="body1" sx={{ marginTop: 2 }}>Size: {product.Subcategory.size}</Typography>
 
         <Box sx={{ display: 'flex', marginTop: 2 }}>
@@ -163,7 +174,6 @@ const ProductDetail = () => {
         </Box>
       </Box>
 
-      {/* Modal for Cart Transaction */}
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -182,7 +192,6 @@ const ProductDetail = () => {
           <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
             <Box>
               <Typography variant="body1">Product Image:</Typography>
-              {/* Display the product image directly */}
               <Box component="img" src={product.images[0]} alt={product.productName} style={{ width: 100, height: 100, marginTop: 5 }} />
               <Typography variant="body1">{product.productName}</Typography>
               <Typography variant="body1">Price: {product.Subcategory.price} PKR</Typography>

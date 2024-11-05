@@ -184,11 +184,15 @@ export const useAuthStore = create((set, get) => ({
     },
 
     // Login function
-    login: (data) => {
+    login: async (data) => {
+        console.log("data from login :",data)
         try {
             const { token, userData } = data;
             set({ token, userId: userData._id });
             localStorage.setItem('authToken', token);
+    
+            // Call fetchUserData to ensure user data is updated
+            await get().fetchUserData();  // Ensure user data is loaded after login
             return true;
         } catch (error) {
             console.error('Login failed:', error);
@@ -204,14 +208,13 @@ export const useAuthStore = create((set, get) => ({
 
     // Check if the user is authenticated
     checkAuthentication: (navigate) => {
-        const { user } = get();
-        if (!user) {
-            navigate('/signup'); // Redirect to SignUp page if not authenticated
+        const { token, user } = get();
+        if (!token || !user) {
+            navigate('/login'); // Redirect to Login if not authenticated
             return false;
         }
         return true;
     },
-
     // Add item to wishlist
     addToWishlist: async (productId, navigate) => {
         if (!get().checkAuthentication(navigate)) return;
@@ -220,6 +223,8 @@ export const useAuthStore = create((set, get) => ({
             const { token, userId, productDetails } = get();
             const productResponse = await axios.get(`http://localhost:8000/api/product/get/${productId}`);
             const productData = productResponse.data;
+            console.log("Product data in authcontext store ", productData)
+            console.log('user id is',userId)
 
             await axios.post(
                 `http://localhost:8000/api/wish/addWish/${userId}/${productId}`,
@@ -235,32 +240,36 @@ export const useAuthStore = create((set, get) => ({
     },
 
     // Remove item from wishlist
-    removeFromWishlist: async (productId, navigate) => {
-        if (!get().checkAuthentication(navigate)) return;
-
+    removeFromWishlist: async (productId) => {
+        if (!get().checkAuthentication()) return;
+    
         try {
             const { token, userId, productDetails } = get();
             await axios.delete(`http://localhost:8000/api/wish/delWish/${userId}/${productId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            
+            // Filter out the removed product and update productDetails in the store
             set({
-                productDetails: productDetails.filter(product => product._id !== productId),
+                productDetails: productDetails.filter(item => item.productDetail._id !== productId),
             });
-            get().fetchUserData();
         } catch (error) {
             console.error('Failed to remove from wishlist:', error);
         }
     },
+    
 
     // Purchase product
-    purchaseProduct: async (productId, shippingDetails, paymentDetails, navigate) => {
+    purchaseProduct: async (productDetail, shippingDetail, paymentDetail,others, navigate) => {
         if (!get().checkAuthentication(navigate)) return;
 
         try {
-            const { token } = get();
+            console.log("shippingDetail is",shippingDetail)
+            const { token,userId } = get();
+            console.log("user id In purchase product of authcontext store is",userId)
             await axios.post(
-                '/api/user/purchase',
-                { productId, shippingDetails, paymentDetails },
+                'http://localhost:8000/api/purchase/add',
+                {userId, productDetail, shippingDetail, paymentDetail,others },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             get().fetchUserData();
@@ -288,8 +297,3 @@ export const useAuthStore = create((set, get) => ({
 }));
 
 
-// Usage in a component
-// Import `useAuthStore` and use it to access or update the state
-
-// Example:
-// const { user, login, logout, addToWishlist, removeFromWishlist } = useAuthStore();

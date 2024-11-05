@@ -11,7 +11,7 @@ import CartPage from './components/CartPage';
 import Service from './components/Service';
 import ContactPage from './components/ContactPage';
 import AboutUsPage from './components/AboutUsPage';
-import Checkout from './components/Checkout';
+import Checkout from './components/checkOut/Checkout';
 import Serarch from './components/Serarch';
 import UserDashboard from './userDashboard/UserDashboard';
 

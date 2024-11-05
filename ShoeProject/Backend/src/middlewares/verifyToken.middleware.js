@@ -3,7 +3,7 @@ import { createError } from "../utils/error.utitls.js";
 
 export const verifyToken = (req, res, next) => {
   const access_token = req.cookies.acccess;
-  console.log("Access token is :",access_token)
+  console.log("Access token is  :",access_token)
 
   
   if (!access_token) {

@@ -16,6 +16,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import {useAuthStore}  from '../context/AuthContext';
 import { Email,  Visibility, VisibilityOff } from '@mui/icons-material'; // Import icons
+import { useProductStore } from '../context/ProductContext';
 
 const Login = () => {
   const { login } = useAuthStore();
@@ -24,6 +25,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [errorMessage, setErrorMessage] = useState('');
+  
 
   useEffect(() => {
     // Clear the input fields on component mount
@@ -45,11 +47,12 @@ const Login = () => {
         // console.log('Login successful:', response.data);
         // Reset fields after successful submission
         login(response.data);
+        console.log("response.data is ",response.data)
         setEmail('');
         setPassword('');
         // Delay navigation to allow the toast to display
         setTimeout(() => {
-          navigate('/'); // Redirect to home or dashboard after delay
+          navigate(`/service`); // Redirect to home or dashboard after delay
         }, 1500); // 1.5-second delay
       }
     } catch (error) {

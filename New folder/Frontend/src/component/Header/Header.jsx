@@ -2,7 +2,7 @@ import React,{useEffect, useState} from 'react'
 import { AppBar, Box, Button, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material'
 import logo from '../../assets/image/logo.png'
 import { AccountCircle, Search, ShoppingCart } from '@mui/icons-material'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 const Header = () => {
     const [anchorElProfile,setAnchorElProfile]=useState(null)
     const navigate = useNavigate();
@@ -54,15 +54,17 @@ const Header = () => {
                     src={logo}
                     
                 />
-                <Box sx={{flexGrow:1,display:{xs:'inline',sm:'block',md:'flex'},justifyContent:'center'}}>
-                   <Button color='inhirit' onClick={()=>navigate('/')}>Home</Button>
-                   <Button color='inhirit' onClick={()=>('/service')}>Service</Button>
-                   <Button color='inhirit' onClick={()=>('/contact')}>Contact</Button>
-                   <Button color='inhirit' onClick={()=>('/about')}>About</Button>
+                <Box sx={{flexGrow:1,display:{xs:'inline',sm:'flex',md:'flex'},justifyContent:'center', gap:10}}>
+                   <Link to='/' style={{fontSize:"20px",textDecoration:"none",color:"#fff"}}>Home</Link>
+                   <Link to='/service' style={{fontSize:"20px",textDecoration:"none",color:"#fff"}}>Service</Link>
+                   <Link to='/about' style={{fontSize:"20px",textDecoration:"none",color:"#fff"}}>About</Link>
+                   <Link to='/contact' style={{fontSize:"20px",textDecoration:"none",color:"#fff"}}>Contact</Link>
+                   
+                  
                    
 
                 </Box>
-                <Box sx={{display:'flex',alignItem:'center', display:{xs:'inline',sm:'block', md:'flex'} }}>
+                <Box sx={{display:'flex',alignItem:'center', display:{xs:'inline',sm:'flex', md:'flex'} }}>
                     <IconButton sx={{color:'white'}} size='large' aria-label='search'                   title='Search' onClick={()=>navigate('/search')}
                     >
                         <Search/>

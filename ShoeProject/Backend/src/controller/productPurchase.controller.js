@@ -1,8 +1,12 @@
 import ProductPurchase from '../model/productPurchase.model.js'
 
 export const purchaseProduct = async (req, res) => {
-    const {userId, productDetail, shippingDetail, paymentDetail, others } = req.body;
-
+    const { productDetail, shippingDetail, paymentDetail, others } = req.body;
+    // console.log("User in middleware:",req.user.userId) 
+    const {userId}=req.user;
+    console.log("userId is",userId)
+    // console.log(req.headers);
+    console.log("UserId",userId,"product Deatil is:",productDetail,"shipping Detail is:",shippingDetail,"payment Detail is:",paymentDetail,"others is:",others) 
     if (!productDetail || !shippingDetail || !paymentDetail) {
         return res.status(400).json({
             status: 400,
@@ -39,8 +43,10 @@ export const purchaseProduct = async (req, res) => {
 
 // export const purchaseProduct=async(req,res,next)=>{
 //     const {productname,productDescription,category,RecipientName,address,city,postalCode,country,phone,shippingMethod,shippingCost,paymentMethod,cardNumber,CvvCode,cardHolderName,expiryDate,currency,deliveryStatus,paymentDate,orderDate}=req.body;
-//     const {userId}=req.params;
-//     try {
+//     console.log("RecipientName:",RecipientName,"city is:",city)
+//     // const {userId}=req.user._id;
+//     // console.log("user id in purchase product is:",userId)
+// try {
 //         let images=[];
 //         if(req.files){
 //             images=req.files.map(file=>file.path);
@@ -78,7 +84,6 @@ export const purchaseProduct = async (req, res) => {
 //         }
 
 //         const parchaseProduct=new ProductPurchase({
-//             userId,
 //             productDetail,
 //             shippingDetail,
 //             paymentDetail,
@@ -130,7 +135,7 @@ export const viewPurchaseProductbyId=async(req,res,next)=>{
     }
 }
 export const AllPurchaseProduct = async (req, res, next) => {
-    const { userId } = req.params;
+    const { userId } = req.user;
     try {
         const allPurchasedProducts = await ProductPurchase.find({userId});
 
@@ -155,6 +160,7 @@ export const AllPurchaseProduct = async (req, res, next) => {
         });
     }
 };
+
   
 export const deletePurchaseProduct=async(req,res,next)=>{
     const {id}=req.params;

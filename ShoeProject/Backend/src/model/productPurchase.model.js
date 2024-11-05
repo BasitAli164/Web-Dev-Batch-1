@@ -5,56 +5,53 @@ const productPurchaseSchema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'User'
     },
-    productDetail:{
+    productDetail:[
+        {
         
             productname:{
                 type:String,
-                trim:true,
                 
             },
             productDescription:{
                 type:String,
-                trim:true,        
             },
             images:{
                 type:[String]
             },
             category:{
                 type:String,
-                trim:true,
                 enum:['men','women','kids']
             },
         
        
 
     },
+    ],
     shippingDetail:{
         RecipientName:{
             type:String,
-            required:true
-        },
-        address:{
-            type:String,
-            requried:true
-        },
-        city:{
-            type:String,
-            required:true
-        },
-        postalCode:{
-            type:String,
-            required:true
         },
         country:{
             type:String,
         },
+        city:{
+            type:String,
+        },
+        state:{
+            type:String,
+        },
+        address:{
+            type:String,
+        },
+        postalCode:{
+            type:String
+        },
         phone:{
             type:String,
-            requried:true
         },
         shippingMethod:{
             type:String,
-            enum:['Standard','Express','Overnight'],
+            enum:['standard','Express','Overnight'],
             default:'Standard'
         },
         shippingCost:{
@@ -67,7 +64,6 @@ const productPurchaseSchema=new mongoose.Schema({
     paymentDetail:{
         paymentMethod:{
             type:String,
-            requried:true
         },
         cardNumber:{
             type:Number,
@@ -80,12 +76,10 @@ const productPurchaseSchema=new mongoose.Schema({
         },
         cardHolderName:{
             type:String,
-            required:true,
 
         },
         expiryDate:{
             type:Date,
-            requried:true
         },
 
     },
