@@ -1,8 +1,9 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Card, CardMedia, CardContent, Grid, styled, IconButton } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { useProductStore } from '../context/ProductContext.jsx';
+
 
 // Styled components
 const Thumbnail = styled('img')(({ theme }) => ({
@@ -72,41 +73,80 @@ const CustomSwitch = styled('div')(({ theme, isMenSelected }) => ({
 }));
 
 const Service = () => {
-  const {products,fetchData}=useProductStore();
+  const { products, fetchData } = useProductStore();
   const [isMenSelected, setIsMenSelected] = useState(true);
   const [hoveredImage, setHoveredImage] = useState({});
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Get the size and color from URL parameters or default to empty
   const selectedSize = searchParams.get('size') || '';
   const selectedColor = searchParams.get('color') || '';
+
   const colors = ['Grey', 'Black', 'Beige', 'Blue', 'Red', 'White', 'Gray', 'Purple'];
-  const productDetail = products.productDetail;// to take only the array 
+  const productDetail = products.result; // Assuming `products.result` is an array of product data
+  console.log("proudct detail is :",productDetail)
+
+  // Fetch data initially and on any filter change
   useEffect(() => {
-    fetchData(); // Fetch products from the backend
-  }, []);
+    fetchData(selectedSize, selectedColor); // Pass selected size and color to fetch filtered data
+  }, [selectedSize, selectedColor]);
+
+  // Filter products based on the selected category and availability of size/color
+ const filteredProducts = Array.isArray(productDetail)
+  ? productDetail.filter(product => {
+      const subcategory = product.Subcategory || {};
+
+      // // Log product details for debugging
+      // console.log("Product:", product.productName);
+      // console.log("Product Size:", subcategory.size, "Selected Size:", selectedSize);
+      // console.log("Product Color:", subcategory.color, "Selected Color:", selectedColor);
+      // console.log("Product Category:", product.category, "Selected Category:", isMenSelected ? 'men' : 'women');
+      
+      // Case-insensitive and null-safe comparison for size
+      const sizeMatches = selectedSize 
+        ? subcategory.size && subcategory.size.toString().toLowerCase() === selectedSize.toLowerCase()
+        : true;  // If no size filter, ignore size comparison
+
+      // Case-insensitive and null-safe comparison for color
+      const colorMatches = selectedColor 
+        ? subcategory.color && subcategory.color.toString().toLowerCase() === selectedColor.toLowerCase()
+        : true;  // If no color filter, ignore color comparison
+
+      // Match category based on selected gender
+      const categoryMatches = product.category === (isMenSelected ? 'men' : 'women');
+
+      // Return product if all conditions are met
+      return categoryMatches && sizeMatches && colorMatches;
+  })
+  : [];
 
 
-  const filteredProducts =Array.isArray( productDetail)? productDetail.filter(product =>
-    product.category === (isMenSelected ? 'men' : 'women') &&
-    (selectedSize ? product.availableSizes.includes(selectedSize) : true) &&
-    (selectedColor ? product.color === selectedColor : true)
-  ):[];
 
+    console.log("filter products" ,filteredProducts)
+    
+
+  // Update search parameters in the URL and trigger data fetch with filters
   const updateSearchParams = (newSize, newColor) => {
     const params = {};
     if (newSize) params.size = newSize;
     if (newColor) params.color = newColor;
     setSearchParams(params);
+    fetchData(newSize, newColor); // Trigger data fetch immediately after updating the filters
   };
 
+  // Reset filters and fetch all products
   const resetFilters = () => {
     setSearchParams({});
+    fetchData(); // Fetch all products without filters
   };
 
+  // Handle thumbnail click to show a specific image on hover
   const handleThumbnailClick = (productId, image) => {
     setHoveredImage(prevState => ({ ...prevState, [productId]: image }));
   };
 
+  // Navigate to product details page
   const handleAddToCart = (product) => {
     navigate(`/service/product/${product._id}`);
   };
@@ -149,7 +189,18 @@ const Service = () => {
           {colors.map(color => (
             <Box key={color} display="flex" alignItems="center" onClick={() => updateSearchParams(selectedSize, color)}>
               <Box
-                sx={{ backgroundColor: color, width: '20px', height: '20px', borderRadius: '50%', cursor: 'pointer', border: '1px solid #ddd', marginLeft: '22px', marginRight: '22px', marginTop: '15px', marginBottom: '15px' }}
+                sx={{
+                  backgroundColor: color,
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '50%',
+                  cursor: 'pointer',
+                  border: '1px solid #ddd',
+                  marginLeft: '22px',
+                  marginRight: '22px',
+                  marginTop: '15px',
+                  marginBottom: '15px'
+                }}
               />
               <Typography variant="body2" style={{ color: selectedColor === color ? color : 'inherit' }}>{color}</Typography>
             </Box>
@@ -197,11 +248,9 @@ const Service = () => {
                   image={hoveredImage[product._id] || product.images[0]}
                   alt={product.productName}
                 />
-                <CardContent sx={{textAlign:'center'}}>
+                <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="h6">{product.productName}</Typography>
                   <Typography variant="body2">{product.Subcategory.price} PKR</Typography>
-
-
                   <Box display="flex" justifyContent="space-between" mt={1}>
                     <IconButton onClick={() => handleAddToCart(product)} >
                       <AddShoppingCartIcon />

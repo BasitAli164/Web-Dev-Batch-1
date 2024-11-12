@@ -1,13 +1,28 @@
 import ProductPurchase from '../model/productPurchase.model.js'
+import { nanoid } from 'nanoid';
 
 export const purchaseProduct = async (req, res) => {
-    const { productDetail, shippingDetail, paymentDetail, others } = req.body;
-    // console.log("User in middleware:",req.user.userId) 
-    const {userId}=req.user;
-    console.log("userId is",userId)
-    // console.log(req.headers);
-    console.log("UserId",userId,"product Deatil is:",productDetail,"shipping Detail is:",shippingDetail,"payment Detail is:",paymentDetail,"others is:",others) 
-    if (!productDetail || !shippingDetail || !paymentDetail) {
+    const { userId, productDetail, shippingDetail, paymentDetail, others } = req.body;
+    console.log("product Detail in purchaseProduct is:", productDetail);
+
+    // Normalize product details and add unique orderId for each product
+    const normalizedProductDetail = productDetail.map(product => ({
+        orderId: nanoid(10),  // Generate unique orderId for each product
+        productname: product.productName, // Change to match schema
+        productDescription: product.description, // Change to match schema
+        images: [product.image], // Convert to array of images
+        category: product.category,
+        price:product.price,
+        brand:product.brand,
+        quantity:product.quantity,
+        size:product.size,
+
+        // Additional fields as needed (quantity, rating, etc.)
+    }));
+    console.log("normalizedProductDetail in purchaseProduct is:", normalizedProductDetail);
+
+    // Validate required fields
+    if (!userId || !normalizedProductDetail || !shippingDetail || !paymentDetail) {
         return res.status(400).json({
             status: 400,
             message: "Product, shipping, and payment details are required."
@@ -17,7 +32,7 @@ export const purchaseProduct = async (req, res) => {
     try {
         const newProductPurchase = new ProductPurchase({
             userId,
-            productDetail, // Includes productname, productDescription, images, category
+            productDetail: normalizedProductDetail, // Now includes orderId for each product
             shippingDetail, // Includes RecipientName, address, city, postalCode, etc.
             paymentDetail,  // Includes paymentMethod, cardNumber, CvvCode, etc.
             others          // Includes deliveryStatus, paymentDate, orderDate, etc.
@@ -40,6 +55,7 @@ export const purchaseProduct = async (req, res) => {
         });
     }
 };
+
 
 // export const purchaseProduct=async(req,res,next)=>{
 //     const {productname,productDescription,category,RecipientName,address,city,postalCode,country,phone,shippingMethod,shippingCost,paymentMethod,cardNumber,CvvCode,cardHolderName,expiryDate,currency,deliveryStatus,paymentDate,orderDate}=req.body;
@@ -110,8 +126,10 @@ export const purchaseProduct = async (req, res) => {
 // }
 export const viewPurchaseProductbyId=async(req,res,next)=>{
     const {id}=req.params
+    console.log("user id in view purchase product is:",req.params)
     try {
-        const parchasedProductDetail=await ProductPurchase.findById(id).populate('userId');
+        const parchasedProductDetail=await ProductPurchase.find({userId:req.params.id})
+        console.log("parchasedProductDetail is:",parchasedProductDetail)
         if(!parchasedProductDetail){
             return res.status(400).json({
                 status:400,

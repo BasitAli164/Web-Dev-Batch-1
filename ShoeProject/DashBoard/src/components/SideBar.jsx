@@ -42,7 +42,7 @@ const Sidebar = () => {
   const handleCloseUserMenu = () => setAnchorEl(null);
 
   const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+    { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
     { text: 'Users', icon: <PeopleIcon />, path: '/users' },
     { text: 'Products', icon: <InventoryIcon />, onClick: toggleProducts, isGroup: true },
     { text: 'Orders', icon: <ShoppingCartIcon />, onClick: toggleOrders, isGroup: true },

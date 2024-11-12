@@ -1,16 +1,21 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-export const useProductStore = create((set,get) => ({
+export const useProductStore = create((set, get) => ({
   products: [],
   
-  // Action to fetch products from backend
-  fetchData: async () => {
+  // Action to fetch products from backend with optional size (number) and color (string) query parameters
+  fetchData: async (size = null, color = '') => {
+
     try {
-      const response = await axios.get('http://localhost:8000/api/product/get');
+      // Construct query parameters based on size and color
+      const query = new URLSearchParams();
+      if (size !== null) query.append('size', size.toString()); // Ensure size is a string for the query
+      if (color) query.append('color', color);
+
+      const response = await axios.get(`http://localhost:8000/api/product/get?${query.toString()}`);
       set({ products: response.data });
-      
-     } catch (error) {
+    } catch (error) {
       console.error("Failed to fetch products:", error);
     }
   },

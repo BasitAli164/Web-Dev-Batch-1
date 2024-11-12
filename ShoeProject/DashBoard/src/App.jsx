@@ -18,7 +18,7 @@ const App = () => (
 
       <div style={{ flexGrow: 1, padding: '200px' }}>
         <Routes>
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/users" element={<UserPage />} />
           <Route path="/content" element={<ContentPage />} />
           <Route path="/orders" element={<OrdersPage />} />

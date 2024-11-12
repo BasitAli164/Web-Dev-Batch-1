@@ -5,10 +5,13 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import HomeIcon from '@mui/icons-material/Home';
 import EmailIcon from '@mui/icons-material/Email';
 import image from '../../public/image/personal/my.png'
+import { useAuthStore } from '../context/AuthContext';
 
 const ProfileSection = () => {
   // Simulating a loading state
   const isLoading = false; // Change this to true to see the skeleton loader
+  const { user } = useAuthStore();  
+  console.log("user in profile section",user);
 
   return (
     <Box sx={{ width: '100%', mx: 'auto', mt: 5,}}>
@@ -21,8 +24,8 @@ const ProfileSection = () => {
             sx={{ width: 100, height: 100, mr: 3, boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)' }}
           />
           <Box>
-            <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>Basit Ali</Typography>
-            <Typography variant="body1" color="text.secondary">AbduPa911@gmail.com</Typography>
+            <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>{user.userName}</Typography>
+            <Typography variant="body1" color="text.secondary">{user.email}</Typography>
           </Box>
         </Box>
 
@@ -34,15 +37,15 @@ const ProfileSection = () => {
           <Box sx={{ mb: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
               <EmailIcon sx={{ color: '#1abc9c', mr: 1 }} />
-              <Typography variant="body1"><strong>Email:</strong> AbduPa911@gmail.com</Typography>
+              <Typography variant="body1"><strong>Email:</strong>{user.email}</Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
               <PhoneIcon sx={{ color: '#1abc9c', mr: 1 }} />
-              <Typography variant="body1"><strong>Phone:</strong> +923475495500</Typography>
+              <Typography variant="body1"><strong>Phone:</strong>{user.phoneNumber}</Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
               <HomeIcon sx={{ color: '#1abc9c', mr: 1 }} />
-              <Typography variant="body1"><strong>Address:</strong> Alamdar Chowk, Skardu, Gilgit-Baltistan,Pakistan</Typography>
+              <Typography variant="body1"><strong>Address:</strong>{user.address} </Typography>
             </Box>
           </Box>
 

@@ -6,27 +6,23 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useProductStore } from '../context/ProductContext';
 
 const Search = () => {
-  const {products}=useProductStore();
+  const { products } = useProductStore();
   const [query, setQuery] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate(); // Hook for navigation
+  const searchItem = products.result;
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     // Filter products based on the query
-    const results = products.filter(product =>
-      product.title.toLowerCase().includes(query.toLowerCase())
+    const results = searchItem.filter(product =>
+      product.category.toLowerCase().includes(query.toLowerCase())
     );
 
     setFilteredProducts(results);
     setSubmitted(true); // Mark form as submitted
-  };
-
-  const handleCancel = () => {
-    // Navigate to Service page when cancel is clicked
-    navigate('/service');
   };
 
   const handleClear = () => {
@@ -42,13 +38,13 @@ const Search = () => {
         Search for Products
       </Typography>
 
-      {/* Search Input and Cancel Button */}
+      {/* Search Input */}
       <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
         <TextField
           variant="outlined"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Enter Search Term"
+          placeholder="Search product on the basis of category (men, women, kids)"
           sx={{
             width: '70%',
             borderRadius: '50px',
@@ -72,14 +68,6 @@ const Search = () => {
             ),
           }}
         />
-        <Button 
-          onClick={handleCancel} 
-          variant="contained" 
-          color="secondary" 
-          sx={{ height: '56px', marginLeft: 2, px: { xs: 3, sm: 5 } }}
-        >
-          Cancel
-        </Button>
       </Box>
 
       {/* Display filtered products as cards in zig-zag form */}
@@ -107,27 +95,24 @@ const Search = () => {
                 '&:hover': { transform: 'scale(1.05)', boxShadow: 10 },
               }}
             >
-              <Tooltip title={product.title} placement="top" arrow>
+              <Tooltip title={product.productName} placement="top" arrow>
                 <CardMedia
                   component="img"
                   height="220"
                   image={product.images[0]}
-                  alt={product.title}
+                  alt={product.productName}
                   sx={{ borderRadius: 3 }}
                 />
               </Tooltip>
               <CardContent sx={{ textAlign: 'center' }}>
                 <Typography variant="h6" component="div" sx={{ fontWeight: 700, mb: 1 }}>
-                  {product.title}
+                  {product.productName}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  {product.description}
+                  {product.productDescription}
                 </Typography>
                 <Typography variant="body1" color="primary" sx={{ fontWeight: 600 }}>
-                  Price: {product.price.toLocaleString()} PKR
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                  Rating: {product.rating} ⭐
+                  Price: {product.Subcategory.price.toLocaleString()} PKR
                 </Typography>
               </CardContent>
             </Card>

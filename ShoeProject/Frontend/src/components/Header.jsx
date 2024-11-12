@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import '../css/Header.css';
 import logo from '../assets/image/logo.png';
 import {
@@ -7,20 +7,18 @@ import {
 } from '@mui/material';
 import { Search, ShoppingCart, AccountCircle } from '@mui/icons-material';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useAuthStore } from '../context/AuthContext';
 
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const logout = useAuthStore((state) => state.logout);
+  const user = useAuthStore((state) => state.user);
+  const token = useAuthStore((state) => state.token);
+
   const [anchorElProfile, setAnchorElProfile] = useState(null);
   const menuRef = useRef(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // Check local storage for login status on component mount
-  useEffect(() => {
-    const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true';
-    setIsLoggedIn(loggedInStatus);
-  }, []);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorElProfile(event.currentTarget);
@@ -31,24 +29,20 @@ const Header = () => {
   };
 
   const handleLogin = () => {
-    setIsLoggedIn(true);
-    localStorage.setItem('isLoggedIn', true); // Set login status in local storage
+    navigate('/login');
     handleProfileMenuClose();
-    navigate('/login'); // Redirect after login
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    localStorage.setItem('isLoggedIn', false); // Clear login status from local storage
+    logout(navigate);
     handleProfileMenuClose();
-    navigate('/'); // Redirect after logout
   };
 
-  const sentences = [
+  const sentences = useMemo(() => [
     'Free Shipping on orders over 50pkr!',
     'Exclusive offers available now!',
     'Get 20% off your first purchase!',
-  ];
+  ], []);
 
   const [currentSentence, setCurrentSentence] = useState(sentences[0]);
 
@@ -61,7 +55,7 @@ const Header = () => {
       });
     }, 2000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(interval); // Cleanup interval on unmount
   }, [sentences]);
 
   const isHomePage = location.pathname === '/';
@@ -82,6 +76,7 @@ const Header = () => {
             src={logo}
           />
         </Link>
+
         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
           <Button color="inherit" onClick={() => navigate('/')}>Home</Button>
           <Button color="inherit" onClick={() => navigate('/service')}>Service</Button>
@@ -125,19 +120,16 @@ const Header = () => {
             open={Boolean(anchorElProfile)}
             onClose={handleProfileMenuClose}
             ref={menuRef}
-            onMouseLeave={() => {
-              if (menuRef.current && !menuRef.current.contains(event.relatedTarget)) {
-                handleProfileMenuClose();
-              }
-            }}
           >
-            {isLoggedIn ? (
+            {user && token ? (
               [
                 <MenuItem key="profile" onClick={() => { handleProfileMenuClose(); navigate('/profile'); }}>Profile</MenuItem>,
-                <MenuItem key={"logout"} onClick={handleLogout}>Logout</MenuItem>
+                <MenuItem key="logout" onClick={handleLogout}>Logout</MenuItem>
               ]
             ) : (
-              <MenuItem onClick={() => { handleProfileMenuClose(); handleLogin(); }}>Login</MenuItem>
+              [
+              <MenuItem onClick={handleLogin}>Login</MenuItem>
+              ]
             )}
           </Menu>
         </Box>
@@ -155,9 +147,3 @@ const Header = () => {
 };
 
 export default Header;
-
-
-
-
-
-

@@ -11,7 +11,7 @@ import {
   CardHeader,
   InputAdornment,
 } from '@mui/material';
-import { Person, Email, Lock, Visibility, VisibilityOff } from '@mui/icons-material'; // Import icons
+import { Person, Email, Phone,LocationCity, Visibility, VisibilityOff } from '@mui/icons-material'; // Import icons
 import axios from 'axios'; // Import Axios
 
 const SignUp = () => {
@@ -19,6 +19,10 @@ const SignUp = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [address, setAddress] = useState('');
+
+
   const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -27,6 +31,8 @@ const SignUp = () => {
     setName('');
     setEmail('');
     setPassword('');
+    setPhoneNumber('');
+    setAddress('');
   }, []);
 
   const handleSubmit = async (e) => {
@@ -37,6 +43,8 @@ const SignUp = () => {
         userName: name,
         email,
         password,
+        phoneNumber,
+        address,
       });
 
       if (response.status === 201) {
@@ -44,6 +52,8 @@ const SignUp = () => {
         setName('');
         setEmail('');
         setPassword('');
+        setAddress('');
+        setPhoneNumber('');
         navigate('/login'); // Redirect to login page after successful signup
       }
     } catch (error) {
@@ -58,7 +68,7 @@ const SignUp = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 2,
+        padding: 10,
         backgroundColor: '#f5f5f5', // Light grey background color
       }}
       mt={4}  
@@ -130,6 +140,44 @@ const SignUp = () => {
                 ),
               }}
             />
+            <TextField
+              fullWidth
+              label="Phone Number"
+              variant="outlined"
+              margin="normal"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              required
+              placeholder="Enter your Phone Number" // Added placeholder
+              sx={{ marginBottom: 3 }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Phone />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              fullWidth
+              label="Address"
+              variant="outlined"
+              margin="normal"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              required
+              placeholder="Enter your Address" // Added placeholder
+              sx={{ marginBottom: 3 }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <LocationCity />
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+
             <Button
               variant="contained"
               color="primary"

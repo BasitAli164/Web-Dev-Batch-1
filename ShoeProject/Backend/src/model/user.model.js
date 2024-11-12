@@ -18,33 +18,15 @@ const userSchema=new mongoose.Schema({
         uniqe:true,
         trim:true
     },
-    firstName:{
+    phoneNumber:{
         type:String,
         // required:true,
-        uniqe:true,
+        // uniqe:true,
         trim:true
-    },
-    lastName:{
-        type:String,
-        // required:true,
-        uniqe:true,
-        trim:true
-    },
-    age:{
-        type:Number,
-        // required:true,
-        
-    },
-    DOB:{
-        type:String,
-        // required:true,
-       
     },
     address:{
         type:String,
-        // required:true,
-        uniqe:true,
-        
+        // required:true,   
     },
     role:{
         type:[String],

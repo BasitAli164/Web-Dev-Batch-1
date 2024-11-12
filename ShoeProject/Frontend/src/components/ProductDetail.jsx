@@ -24,7 +24,7 @@ const ProductDetail = () => {
   const { addItem } = useCartStore();
   const { products } = useProductStore();
   const { user, removeFromWishlist, addToWishlist, productDetails } = useAuthStore();
-  const productDetail = products.productDetail;
+  const productDetail = products.result;
   const navigate = useNavigate();
 
   const product = Array.isArray(productDetail) ? productDetail.find((product) => product._id.toString() === id) : null;
@@ -96,6 +96,10 @@ const ProductDetail = () => {
               borderRadius: '5px',
               transition: 'transform 0.3s',
               padding: 2,
+              fontSize:30,// change after fetching images correctly......
+              marginTop:15,
+              marginLeft:40,
+              textAlign:"center"
             }}
           />
         </Grid>

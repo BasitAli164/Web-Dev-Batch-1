@@ -5,8 +5,8 @@ import { verifyUser } from '../middlewares/verifyToken.middleware.js';
 
 const purchaseRouter=express.Router()
  
-purchaseRouter.post('/add',verifyUser,purchaseProduct)
-purchaseRouter.get('/purchase/:id',viewPurchaseProductbyId)
+purchaseRouter.post('/add',purchaseProduct)
+purchaseRouter.get('/get/:id',viewPurchaseProductbyId)
 purchaseRouter.get('/getAll',verifyUser,AllPurchaseProduct)
 purchaseRouter.delete('/del/:id',deletePurchaseProduct)
 

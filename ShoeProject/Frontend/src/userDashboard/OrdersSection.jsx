@@ -1,29 +1,39 @@
-import React from 'react';
-import { Box, Typography, Card, CardContent, Button, Grid, Chip, Divider, IconButton } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Typography, IconButton, Chip, Menu, MenuItem, Modal, Box } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
-
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { useAuthStore } from '../context/AuthContext';
+import { MaterialReactTable } from 'material-react-table';
 
 const OrdersSection = () => {
-  // Sample order data - in real apps, this would come from an API
-  const orders = [
-    {
-      id: 12345,
-      status: 'Delivered',
-      date: 'Oct 20, 2023',
-      total: 'PKR 5,000',
-    },
-    {
-      id: 67890,
-      status: 'In Transit',
-      date: 'Oct 22, 2023',
-      total: 'PKR 7,500',
-    },
-    // Add more orders as necessary
-  ];
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+  const { userId } = useAuthStore();
 
-  // Function to render status with appropriate color
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`http://localhost:8000/api/purchase/get/${userId}`);
+      if (response.data && response.data.detail) {
+        setOrders(response.data.detail);
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, [userId]);
+
   const renderStatusChip = (status) => {
     if (status === 'Delivered') {
       return <Chip label="Delivered" color="success" icon={<CheckCircleIcon />} />;
@@ -33,55 +43,172 @@ const OrdersSection = () => {
     return <Chip label={status} color="default" />;
   };
 
+  const handleClickMenu = (event, product) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedProduct(product); 
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const handleViewDetails = () => {
+    if (selectedProduct) {
+      setOpenModal(true);
+    }
+    handleCloseMenu();
+  };
+
+  const handleHideDetails = () => {
+    setOpenModal(false);
+  };
+
+  const columns = [
+    {
+      header: 'Actions',
+      Cell: ({ row }) => (
+        <IconButton
+          color="primary"
+          onClick={(event) => handleClickMenu(event, row.original)}
+          aria-label="options"
+        >
+          <MoreVertIcon />
+        </IconButton>
+      ),
+      size: 40,
+    },
+    { accessorKey: 'orderId', header: 'Order ID', size: 80 },
+    { accessorKey: 'productName', header: 'Product Name', size: 100 },
+    {
+      accessorKey: 'orderDate',
+      header: 'Order Date',
+      Cell: ({ cell }) => new Date(cell.getValue()).toLocaleDateString(),
+      size: 80,
+    },
+    {
+      accessorKey: 'deliveryStatus',
+      header: 'Status',
+      Cell: ({ cell }) => renderStatusChip(cell.getValue()),
+      size: 80,
+    },
+    { accessorKey: 'price', header: 'Price', size: 80 },
+    {
+      accessorKey: 'shippingAddress',
+      header: 'Shipping Address',
+      Cell: ({ cell }) => (
+        <Typography variant="body2" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' }}>
+          {cell.getValue()}
+        </Typography>
+      ),
+      size: 150,
+    },
+    { accessorKey: 'paymentMethod', header: 'Payment Method', size: 80 },
+  ];
+
+  const data = orders.flatMap(order => {
+    const productsGrouped = order.productDetail.reduce((acc, product) => {
+      acc[product._id] = acc[product._id] || { ...product, quantity: 0, orderId: order._id, orderDate: order.others?.orderDate, deliveryStatus: order.others?.deliveryStatus, price: product.paymentMethod?.price || 0, shippingAddress: `${order.shippingDetail?.address}, ${order.shippingDetail?.city}, ${order.shippingDetail?.state}, ${order.shippingDetail?.country}`, paymentMethod: order.paymentDetail?.paymentMethod };
+      acc[product._id].quantity += 1;
+      return acc;
+    }, {});
+
+    return Object.values(productsGrouped).map(product => ({
+      id: product._id,
+      orderId: product.orderId,
+      productName: product.productname,
+      orderDate: product.orderDate,
+      deliveryStatus: product.deliveryStatus,
+      price: product.price,
+      shippingAddress: product.shippingAddress,
+      paymentMethod: product.paymentMethod,
+      quantity: product.quantity,  
+    }));
+  });
+
   return (
-    <Box sx={{ width: "100%", mx: 'auto', mt: 4, px: 2 }}>
-      <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold', textAlign: 'center' }}>Order History</Typography>
-      
-      <Grid container spacing={4}>
-        {orders.map((order) => (
-          <Grid item xs={12} key={order.id}>
-            <Card sx={{ p: 3, borderRadius: 3, boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)', transition: 'transform 0.3s', '&:hover': { transform: 'scale(1.02)' } }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                  <Box>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#333' }}>Order #{order.id}</Typography>
-                    <Typography variant="body2" color="textSecondary">Date: {order.date}</Typography>
-                  </Box>
-                  <Box>
-                    {renderStatusChip(order.status)}
-                  </Box>
-                </Box>
+    <>
+      <Typography variant="h4" sx={{ mb: 4, pt: 3, fontWeight: 'bold', textAlign: 'center' }}>
+        Order History
+      </Typography>
 
-                <Divider sx={{ my: 2 }} />
+      {loading ? (
+        <Typography variant="h6" color="textSecondary" sx={{ textAlign: 'center' }}>
+          Loading orders...
+        </Typography>
+      ) : (
+        <div style={{ overflowX: 'auto' }}>
+          <MaterialReactTable
+            columns={columns}
+            data={data}
+            enableSorting
+            enablePagination
+            initialState={{ pagination: { pageIndex: 0, pageSize: 5 } }}
+            renderTopToolbarCustomActions={() => (
+              <IconButton color="primary" onClick={fetchOrders} aria-label="refresh orders" sx={{ mb: 2 }}>
+                <RefreshIcon />
+              </IconButton>
+            )}
+            enableColumnResizing={true}
+            enableColumnReordering={true}
+            muiTableContainerProps={{
+              sx: { maxHeight: '400px' },
+            }}
+            muiTableBodyCellProps={{
+              sx: { py: 1, px: 1.5, fontSize: '0.9rem' },
+            }}
+          />
+        </div>
+      )}
 
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="body1" sx={{ fontWeight: 'medium', color: '#555' }}>Total: {order.total}</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Button
-                      variant="outlined"
-                      sx={{
-                        borderColor: '#1abc9c',
-                        color: '#1abc9c',
-                        '&:hover': { backgroundColor: '#e9f7f5' },
-                        fontWeight: 'bold',
-                        textTransform: 'none',
-                        mr: 2,
-                      }}
-                    >
-                      View Details
-                    </Button>
-                    <IconButton color="error" aria-label="delete order">
-                      <DeleteIcon />
-                    </IconButton>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
+      {/* Menu for product options */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleCloseMenu}
+      >
+        <MenuItem onClick={handleViewDetails}>View Details</MenuItem>
+        {selectedProduct && (
+          <MenuItem onClick={() => alert(`Product Quantity: ${selectedProduct.quantity}`)}>
+            Quantity: {selectedProduct.quantity}
+          </MenuItem>
+        )}
+      </Menu>
+
+      {/* Modal for viewing all products with the same ID */}
+      <Modal
+        open={openModal}
+        onClose={handleHideDetails}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={{ ...style, width: 500 }}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Product Details
+          </Typography>
+          {selectedProduct && (
+            <div>
+              <Typography variant="body1">Product Name: {selectedProduct.productName}</Typography>
+              <Typography variant="body1">Order ID: {selectedProduct.orderId}</Typography>
+              <Typography variant="body1">Quantity: {selectedProduct.quantity}</Typography>
+              <Typography variant="body1">Price: {selectedProduct.price} PKR</Typography>
+              {/* Add more details or styles as necessary */}
+            </div>
+          )}
+          <IconButton onClick={handleHideDetails} color="primary">Close</IconButton>
+        </Box>
+      </Modal>
+    </>
   );
+};
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
 };
 
 export default OrdersSection;

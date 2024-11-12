@@ -2,11 +2,16 @@ import mongoose from "mongoose";
 
 const productPurchaseSchema=new mongoose.Schema({
     userId:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User'
-    },
+                type:String,
+                required:true,
+            },
     productDetail:[
         {
+            orderId:{
+                type:String,
+                required:true,
+            },
+            
         
             productname:{
                 type:String,
@@ -22,6 +27,20 @@ const productPurchaseSchema=new mongoose.Schema({
                 type:String,
                 enum:['men','women','kids']
             },
+            quantity:{
+                type:Number,
+            },
+            price:{
+                type:Number,
+            },
+            brand:{
+                type:String,
+            },
+            size:{
+                type:Number
+            }
+                
+                
         
        
 

@@ -101,37 +101,54 @@ export const getProductById=async(req,res,next)=>{
 }
 
 
-export const getProduct=async(req,res,next)=>{
-    try {
-        const product=await Product.find().populate('Subcategory').populate("review");
-        if(!product){
-            res
-            .status(404)
-            .json({
-                status:404,
-                message:"There are no Product Add in Database. Add Product first..........!",
-            })
-        }
 
-        res
-        .status(200)
-        .json({
-            status:200,
-            message:"The following Product are saved in Database which showned here...........!",
-            productDetail:product,
-        })
-        
-    } catch (error) {
-        console.log(error)
-        res
-        .status(500)
-        .json({
-            status:500,
-            message:"Server side Error.........!",
-            err:error
-        })        
+
+// Get all products
+
+export const getProduct = async (req, res, next) => {
+  try {
+    const { size, color } = req.query;
+
+    // Initialize conditions
+    const subCategoryConditions = {};
+
+    // Add condition for size if it's provided
+    if (size) {
+      subCategoryConditions.size = size;
     }
-}
+
+    // Add condition for color if it's provided
+    if (color) {
+      subCategoryConditions.color = color;
+    }
+
+    // Step 1: Find SubCategories that match the conditions
+    const subCategories = await Subcategories.find(subCategoryConditions);
+
+    // Step 2: Use the subcategory ObjectIds to filter Products
+    const products = await Product.find({
+      Subcategory: { $in: subCategories.map(sub => sub._id) }
+    }).populate('Subcategory'); // Populate Subcategory to get full details
+
+    res.status(200).json({
+      message: "Products retrieved successfully.",
+      status: 200,
+      result: products,
+    });
+  } catch (error) {
+    console.error("Error retrieving products:", error);
+    res.status(500).json({
+      message: "Something went wrong.",
+      status: 500,
+      error: error.message,
+    });
+  }
+};
+
+
+
+
+  
 export const updateProduct = async (req, res, next) => {
     const { name, description, category, ...others } = req.body;
   

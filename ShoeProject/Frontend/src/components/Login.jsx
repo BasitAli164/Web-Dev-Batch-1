@@ -44,10 +44,8 @@ const Login = () => {
 
       if (response.status === 200) {
         toast.success('Login successful!');
-        // console.log('Login successful:', response.data);
         // Reset fields after successful submission
         login(response.data);
-        console.log("response.data is ",response.data)
         setEmail('');
         setPassword('');
         // Delay navigation to allow the toast to display

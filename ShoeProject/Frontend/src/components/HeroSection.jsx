@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Link } from '@mui/material';
+import { Box, Typography, Link, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom'; // To handle navigation
 import bgimage1 from '../assets/image/backgroundImage/backgroundImage1.avif';
 import bgimage2 from '../assets/image/backgroundImage/backgroundImage2.avif';
@@ -34,7 +34,7 @@ const HeroSection = () => {
       className="Box"
       sx={{
         textAlign: 'center',
-        p: 19,
+        p: 20,
         backgroundImage: `url(${bgImages[currentImage]})`, // Dynamic background image
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -74,6 +74,23 @@ Men
         . Whether you're looking for the latest trends or timeless classics, we have something for
         everyone. Our commitment to quality ensures that you get the best value for your money.
       </Typography>
+      <Button 
+    variant='outlined' 
+     sx={{
+      fontSize: 17,
+      fontWeight: 600,
+      background: '#17a589',
+      color: 'white',
+      padding: 2,
+      width: 200,
+      borderRadius: 50,
+      mt: 6
+    }}
+    onClick={()=>navigate('/service')}
+    
+        
+        >Shop Now</Button>
+   
     </Box>
   );
 };

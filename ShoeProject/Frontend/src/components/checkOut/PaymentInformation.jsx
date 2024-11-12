@@ -7,7 +7,7 @@ const PaymentInformation = ({ setFieldTouched, errors, touched }) => (
   <Box sx={{ width: '90%', textAlign: 'center' }}>
     <Typography variant="h6">Payment Information</Typography>
     <Box sx={{ textAlign: 'center', marginLeft: '20%', marginRight: '10%' }}>
-      {['cardNumber', 'expiryDate', 'cvv', 'cardHolderName', 'amount'].map((key) => (
+      {['cardHolderName', 'cardNumber', 'cvv', 'expiryDate', ].map((key) => (
         <Field
           key={key}
           name={`payment.${key}`}
