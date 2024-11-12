@@ -10,13 +10,10 @@ import {
   Card,
   CardContent,
   Box,
-  Divider,
-  IconButton,
-  Paper,
 } from '@mui/material';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import axios from 'axios';
+import emailjs from 'emailjs-com';
 import { Email, Phone, LocationOn, Send } from '@mui/icons-material';
 
 const ContactPage = () => {
@@ -26,28 +23,34 @@ const ContactPage = () => {
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Name is required').min(2, 'Too short!'),
     email: Yup.string().email('Invalid email').required('Email is required'),
-    subject: Yup.string().required('Subject is required'),
     message: Yup.string().required('Message is required').min(10, 'Message must be at least 10 characters long'),
   });
 
-  const handleSubmit = async (values, { resetForm }) => {
+  const handleSubmit = (values, { resetForm }) => {
     setIsSubmitting(true);
     setFormStatus('');
-    try {
-      const response = await axios.post('https://fakeapi.com/contact', values); // Simulated API call
+
+    emailjs.send(
+      'service_bljv003',      // Replace with your EmailJS service ID
+      'template_bxnqksk',     // Replace with your EmailJS template ID
+      values,
+      '5pdpE_sHrxlMq8_MF'          // Replace with your EmailJS user ID
+    )
+    .then((response) => {
       setFormStatus('success');
       resetForm();
-    } catch (error) {
-      console.error('Error submitting the form:', error);
+    })
+    .catch((error) => {
+      console.error('Error sending email:', error);
       setFormStatus('error');
-    } finally {
+    })
+    .finally(() => {
       setIsSubmitting(false);
-    }
+    });
   };
 
   return (
     <Container maxWidth="md" sx={{ marginTop: '100px', marginBottom: '50px' }}>
-      {/* Row 1: Header and Description */}
       <Typography variant="h3" align="center" gutterBottom>
         Contact Us
       </Typography>
@@ -56,13 +59,12 @@ const ContactPage = () => {
       </Typography>
       <br /><br />
 
-      {/* Row 2: Contact Form and Additional Info */}
       <Grid container spacing={10}>
         <Grid item xs={12} md={6} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           <Card elevation={3} sx={{ borderRadius: '12px', backgroundColor: '#fafafa', flex: 1 }}>
             <CardContent>
               <Formik
-                initialValues={{ name: '', email: '', subject: '', message: '' }}
+                initialValues={{ name: '', email: '', message: '' }}
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
               >
@@ -89,17 +91,6 @@ const ContactPage = () => {
                       variant="outlined"
                       error={touched.email && !!ErrorMessage}
                       helperText={<ErrorMessage name="email" />}
-                      sx={{ marginBottom: '10px' }}
-                    />
-                    <Field
-                      as={TextField}
-                      name="subject"
-                      label="Subject"
-                      fullWidth
-                      margin="normal"
-                      variant="outlined"
-                      error={touched.subject && !!ErrorMessage}
-                      helperText={<ErrorMessage name="subject" />}
                       sx={{ marginBottom: '10px' }}
                     />
                     <Field
