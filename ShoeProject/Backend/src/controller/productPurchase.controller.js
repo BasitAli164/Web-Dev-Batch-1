@@ -4,10 +4,10 @@ import { nanoid } from 'nanoid';
 export const purchaseProduct = async (req, res) => {
     const { userId, productDetail, shippingDetail, paymentDetail, others } = req.body;
     console.log("product Detail in purchaseProduct is:", productDetail);
-
+    const id=nanoid(6);
     // Normalize product details and add unique orderId for each product
     const normalizedProductDetail = productDetail.map(product => ({
-        orderId: nanoid(10),  // Generate unique orderId for each product
+        orderId: id,  // Generate unique orderId for each product
         productname: product.productName, // Change to match schema
         productDescription: product.description, // Change to match schema
         images: [product.image], // Convert to array of images

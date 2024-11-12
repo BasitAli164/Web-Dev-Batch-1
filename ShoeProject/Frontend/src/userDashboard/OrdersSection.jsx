@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Typography, IconButton, Chip, Menu, MenuItem, Modal, Box } from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Typography, IconButton, Chip, Modal, Box, Button } from '@mui/material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -11,9 +10,8 @@ import { MaterialReactTable } from 'material-react-table';
 const OrdersSection = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const { userId } = useAuthStore();
 
   const fetchOrders = async () => {
@@ -43,20 +41,9 @@ const OrdersSection = () => {
     return <Chip label={status} color="default" />;
   };
 
-  const handleClickMenu = (event, product) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedProduct(product); 
-  };
-
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
-
-  const handleViewDetails = () => {
-    if (selectedProduct) {
-      setOpenModal(true);
-    }
-    handleCloseMenu();
+  const handleViewDetails = (product) => {
+    setSelectedProduct(product);
+    setOpenModal(true);
   };
 
   const handleHideDetails = () => {
@@ -65,17 +52,20 @@ const OrdersSection = () => {
 
   const columns = [
     {
+      accessorKey: 'viewDetails',
       header: 'Actions',
       Cell: ({ row }) => (
-        <IconButton
+        <Button
+          variant="contained"
           color="primary"
-          onClick={(event) => handleClickMenu(event, row.original)}
-          aria-label="options"
+          size="smaller"
+          onClick={() => handleViewDetails(row.original)}
+          sx={{ borderRadius: 10 }}
         >
-          <MoreVertIcon />
-        </IconButton>
+          View
+        </Button>
       ),
-      size: 40,
+      size: 120,
     },
     { accessorKey: 'orderId', header: 'Order ID', size: 80 },
     { accessorKey: 'productName', header: 'Product Name', size: 100 },
@@ -92,26 +82,15 @@ const OrdersSection = () => {
       size: 80,
     },
     { accessorKey: 'price', header: 'Price', size: 80 },
-    {
-      accessorKey: 'shippingAddress',
-      header: 'Shipping Address',
-      Cell: ({ cell }) => (
-        <Typography variant="body2" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' }}>
-          {cell.getValue()}
-        </Typography>
-      ),
-      size: 150,
-    },
     { accessorKey: 'paymentMethod', header: 'Payment Method', size: 80 },
+    // Removed shippingAddress column from MRT table
   ];
 
   const data = orders.flatMap(order => {
     const productsGrouped = order.productDetail.reduce((acc, product) => {
-      acc[product._id] = acc[product._id] || { ...product, quantity: 0, orderId: order._id, orderDate: order.others?.orderDate, deliveryStatus: order.others?.deliveryStatus, price: product.paymentMethod?.price || 0, shippingAddress: `${order.shippingDetail?.address}, ${order.shippingDetail?.city}, ${order.shippingDetail?.state}, ${order.shippingDetail?.country}`, paymentMethod: order.paymentDetail?.paymentMethod };
-      acc[product._id].quantity += 1;
+      acc[product._id] = acc[product._id] || { ...product, orderDate: order.others?.orderDate, deliveryStatus: order.others?.deliveryStatus, shippingAddress: `${order.shippingDetail?.address}, ${order.shippingDetail?.city}, ${order.shippingDetail?.state}, ${order.shippingDetail?.country}`, paymentMethod: order.paymentDetail?.paymentMethod };
       return acc;
     }, {});
-
     return Object.values(productsGrouped).map(product => ({
       id: product._id,
       orderId: product.orderId,
@@ -119,9 +98,9 @@ const OrdersSection = () => {
       orderDate: product.orderDate,
       deliveryStatus: product.deliveryStatus,
       price: product.price,
-      shippingAddress: product.shippingAddress,
+      shippingAddress: product.shippingAddress, // Retained for modal view
       paymentMethod: product.paymentMethod,
-      quantity: product.quantity,  
+      quantity: product.quantity,
     }));
   });
 
@@ -160,20 +139,6 @@ const OrdersSection = () => {
         </div>
       )}
 
-      {/* Menu for product options */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleCloseMenu}
-      >
-        <MenuItem onClick={handleViewDetails}>View Details</MenuItem>
-        {selectedProduct && (
-          <MenuItem onClick={() => alert(`Product Quantity: ${selectedProduct.quantity}`)}>
-            Quantity: {selectedProduct.quantity}
-          </MenuItem>
-        )}
-      </Menu>
-
       {/* Modal for viewing all products with the same ID */}
       <Modal
         open={openModal}
@@ -191,10 +156,12 @@ const OrdersSection = () => {
               <Typography variant="body1">Order ID: {selectedProduct.orderId}</Typography>
               <Typography variant="body1">Quantity: {selectedProduct.quantity}</Typography>
               <Typography variant="body1">Price: {selectedProduct.price} PKR</Typography>
-              {/* Add more details or styles as necessary */}
+              <Typography variant="body1">Status: {selectedProduct.deliveryStatus}</Typography>
+              <Typography variant="body1">Shipping Address: {selectedProduct.shippingAddress}</Typography>
+              <Typography variant="body1">Payment Method: {selectedProduct.paymentMethod}</Typography>
             </div>
           )}
-          <IconButton onClick={handleHideDetails} color="primary">Close</IconButton>
+          <Button onClick={handleHideDetails} color="primary">Close</Button>
         </Box>
       </Modal>
     </>

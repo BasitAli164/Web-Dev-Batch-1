@@ -3,7 +3,7 @@ import { Box, Typography, Card, CardMedia, CardContent, Grid, styled, IconButton
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { useProductStore } from '../context/ProductContext.jsx';
-
+import { BASE_URL } from './BaseUrl.jsx';
 
 // Styled components
 const Thumbnail = styled('img')(({ theme }) => ({
@@ -245,7 +245,7 @@ const Service = () => {
                 <CardMedia
                   component="img"
                   height="200"
-                  image={hoveredImage[product._id] || product.images[0]}
+                  image={`${BASE_URL}hoveredImage[product._id]` || `${BASE_URL}product.images[0]`}
                   alt={product.productName}
                 />
                 <CardContent sx={{ textAlign: 'center' }}>
