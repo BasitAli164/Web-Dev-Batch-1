@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Typography, IconButton, Chip, Modal, Box, Button } from '@mui/material';
+import { Typography, IconButton, Chip, Modal, Box, Button, Divider } from '@mui/material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -82,13 +82,11 @@ const OrdersSection = () => {
       size: 80,
     },
     { accessorKey: 'price', header: 'Price', size: 80 },
-    { accessorKey: 'paymentMethod', header: 'Payment Method', size: 80 },
-    // Removed shippingAddress column from MRT table
   ];
 
   const data = orders.flatMap(order => {
     const productsGrouped = order.productDetail.reduce((acc, product) => {
-      acc[product._id] = acc[product._id] || { ...product, orderDate: order.others?.orderDate, deliveryStatus: order.others?.deliveryStatus, shippingAddress: `${order.shippingDetail?.address}, ${order.shippingDetail?.city}, ${order.shippingDetail?.state}, ${order.shippingDetail?.country}`, paymentMethod: order.paymentDetail?.paymentMethod };
+      acc[product._id] = acc[product._id] || { ...product, orderDate: order.others?.orderDate, deliveryStatus: order.others?.deliveryStatus, shippingAddress: `${order.shippingDetail?.address}, ${order.shippingDetail?.city}, ${order.shippingDetail?.state}, ${order.shippingDetail?.country}`, paymentMethod: order.paymentDetail?.method };
       return acc;
     }, {});
     return Object.values(productsGrouped).map(product => ({
@@ -99,8 +97,8 @@ const OrdersSection = () => {
       deliveryStatus: product.deliveryStatus,
       price: product.price,
       shippingAddress: product.shippingAddress, // Retained for modal view
-      paymentMethod: product.paymentMethod,
       quantity: product.quantity,
+      paymentMethod: product.paymentMethod, // Payment Method added for modal view
     }));
   });
 
@@ -146,29 +144,33 @@ const OrdersSection = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={{ ...style, width: 500 }}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
+        <Box sx={{ ...modalStyle }}>
+          <Typography id="modal-modal-title" variant="h5" component="h2" sx={{ mb: 2, fontWeight: 'bold', textAlign: 'center' }}>
             Product Details
           </Typography>
+          <Divider sx={{ mb: 2 }} />
           {selectedProduct && (
-            <div>
-              <Typography variant="body1">Product Name: {selectedProduct.productName}</Typography>
-              <Typography variant="body1">Order ID: {selectedProduct.orderId}</Typography>
-              <Typography variant="body1">Quantity: {selectedProduct.quantity}</Typography>
-              <Typography variant="body1">Price: {selectedProduct.price} PKR</Typography>
-              <Typography variant="body1">Status: {selectedProduct.deliveryStatus}</Typography>
-              <Typography variant="body1">Shipping Address: {selectedProduct.shippingAddress}</Typography>
-              <Typography variant="body1">Payment Method: {selectedProduct.paymentMethod}</Typography>
-            </div>
+            <Box sx={{ pl: 2, pr: 2 }}>
+              <Typography variant="body1" sx={{ mb: 1 }}><strong>Product Name:</strong> {selectedProduct.productName}</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}><strong>Order ID:</strong> {selectedProduct.orderId}</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}><strong>Quantity:</strong> {selectedProduct.quantity}</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}><strong>Price:</strong> {selectedProduct.price} PKR</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}><strong>Status:</strong> {selectedProduct.deliveryStatus}</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}><strong>Shipping Address:</strong> {selectedProduct.shippingAddress}</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}><strong>Payment Method:</strong> {selectedProduct.paymentMethod}</Typography>
+            </Box>
           )}
-          <Button onClick={handleHideDetails} color="primary">Close</Button>
+          <Divider sx={{ mt: 2, mb: 2 }} />
+          <Button onClick={handleHideDetails} color="primary" variant="contained" sx={{ width: '100%', mt: 2, fontWeight: 'bold' }}>
+            Close
+          </Button>
         </Box>
       </Modal>
     </>
   );
 };
 
-const style = {
+const modalStyle = {
   position: 'absolute',
   top: '50%',
   left: '50%',
@@ -176,6 +178,10 @@ const style = {
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4,
+  borderRadius: 2,
+  width: '90%',
+  maxWidth: 500,
+  textAlign: 'left'
 };
 
 export default OrdersSection;

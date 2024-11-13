@@ -21,10 +21,18 @@ const ContactPage = () => {
   const [formStatus, setFormStatus] = useState('');
 
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required').min(2, 'Too short!'),
-    email: Yup.string().email('Invalid email').required('Email is required'),
-    message: Yup.string().required('Message is required').min(10, 'Message must be at least 10 characters long'),
+    name: Yup.string()
+      .required('Name is required')
+      .min(5, 'Too short!'),
+    email: Yup.string()
+      .email('Invalid email format')
+      .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Email must be in format: example@gmail.com')
+      .required('Email is required'),
+    message: Yup.string()
+      .required('Message is required')
+      .min(10, 'Message must be at least 10 characters long'),
   });
+  
 
   const handleSubmit = (values, { resetForm }) => {
     setIsSubmitting(true);

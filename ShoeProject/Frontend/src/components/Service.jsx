@@ -242,12 +242,14 @@ const Service = () => {
           {filteredProducts.map(product => (
             <Grid item xs={12} sm={6} md={4} key={product._id}>
               <StyledCard isHovered={true} onClick={() => navigate(`/service/product/${product._id}`)}>
-                <CardMedia
-                  component="img"
-                  height="200"
-                  image={`${BASE_URL}hoveredImage[product._id]` || `${BASE_URL}product.images[0]`}
-                  alt={product.productName}
-                />
+              <CardMedia
+  component="img"
+  height="200"
+  image={hoveredImage[product._id] || `${BASE_URL}/media/${product.images[0]}`}
+  
+  alt={product.productName}
+/>
+
                 <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="h6">{product.productName}</Typography>
                   <Typography variant="body2">{product.Subcategory.price} PKR</Typography>

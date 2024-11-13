@@ -1,4 +1,3 @@
-// src/components/Sidebar.js
 import React, { useState } from 'react';
 import {
   Drawer,
@@ -14,9 +13,9 @@ import {
   Box,
   IconButton,
   TextField,
-  Popover,
-  Button,
 } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+
 import {
   Dashboard as DashboardIcon,
   People as PeopleIcon,
@@ -25,7 +24,6 @@ import {
   ShoppingCart as ShoppingCartIcon,
   ExpandLess,
   ExpandMore,
-  MoreVert,
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
@@ -33,17 +31,18 @@ const Sidebar = () => {
   const [openOrders, setOpenOrders] = useState(false);
   const [openProducts, setOpenProducts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false); // State to track collapse
 
-  const toggleOrders = () => setOpenOrders(prev => !prev);
-  const toggleProducts = () => setOpenProducts(prev => !prev);
-  const handleSearchChange = event => setSearchQuery(event.target.value);
-  const handleUserMenuClick = event => setAnchorEl(event.currentTarget);
-  const handleCloseUserMenu = () => setAnchorEl(null);
+  const toggleDrawer = () => setIsDrawerOpen((prev) => !prev);
+  const toggleCollapse = () => setIsCollapsed((prev) => !prev); // Toggle collapse state
+  const toggleOrders = () => setOpenOrders((prev) => !prev);
+  const toggleProducts = () => setOpenProducts((prev) => !prev);
+  const handleSearchChange = (event) => setSearchQuery(event.target.value);
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-    { text: 'Users', icon: <PeopleIcon />, path: '/users' },
+    { text: 'Customers', icon: <PeopleIcon />, path: '/users' },
     { text: 'Products', icon: <InventoryIcon />, onClick: toggleProducts, isGroup: true },
     { text: 'Orders', icon: <ShoppingCartIcon />, onClick: toggleOrders, isGroup: true },
     { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
@@ -59,7 +58,7 @@ const Sidebar = () => {
     { text: 'Order History', path: '/orders/history' },
   ];
 
-  const filteredMenuItems = menuItems.filter(item =>
+  const filteredMenuItems = menuItems.filter((item) =>
     item.text.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -68,53 +67,56 @@ const Sidebar = () => {
       <Drawer
         variant="persistent"
         anchor="left"
-        open={true} // Sidebar is permanently open
+        open={isDrawerOpen}
         sx={{
           '& .MuiDrawer-paper': {
-            width: 250,
+            width: isCollapsed ? 95 : 250, // Conditionally change the width
             backgroundColor: '#3f51b5',
             color: '#fff',
             border: 'none',
             boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+            height: '100vh',
+            transition: 'width 0.3s', // Smooth transition
           },
         }}
       >
-        <Box sx={{ padding: 2, height: '100vh' }}>
+        <Box
+          sx={{
+            padding: 2,
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Header section with Avatar and Menu Icon */}
           <Box display="flex" alignItems="center" mb={2}>
             <Avatar src="path_to_your_image.jpg" sx={{ marginRight: 1 }} />
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Username</Typography>
-            <IconButton onClick={handleUserMenuClick} sx={{ marginLeft: 'auto' }}>
-              <MoreVert />
+            {!isCollapsed && (
+              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                SalesMen
+              </Typography>
+            )}
+            <IconButton onClick={toggleCollapse} sx={{ marginLeft: 'auto' }}>
+              <MenuIcon sx={{ color: '#fff' }} /> {/* Toggle Collapse */}
             </IconButton>
-            <Popover
-              open={Boolean(anchorEl)}
-              anchorEl={anchorEl}
-              onClose={handleCloseUserMenu}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-            >
-              <Box sx={{ p: 2, backgroundColor: 'darkblue' }}>
-                <Button sx={{color:"white",margin:1,backgroundColor:"gray"}} variant='outlined'  > Profile</Button><br />
-                <Button sx={{color:"white",margin:1,backgroundColor:"gray"}} variant='outlined'> Logout</Button>
-              </Box>
-            </Popover>
           </Box>
           <Divider sx={{ marginBottom: 1, backgroundColor: '#fff' }} />
-          <TextField
-            variant="outlined"
-            placeholder="Search..."
-            fullWidth
-            size="small"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            sx={{ mb: 2, '& .MuiOutlinedInput-root': { backgroundColor: '#fff' } }}
-          />
+
+          {/* Search bar */}
+          {!isCollapsed && (
+            <TextField
+              variant="outlined"
+              placeholder="Search..."
+              fullWidth
+              size="small"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              sx={{ mb: 2, '& .MuiOutlinedInput-root': { backgroundColor: '#fff' } }}
+            />
+          )}
+
+          {/* Menu List */}
           <List>
             {filteredMenuItems.map((item, index) => (
               <React.Fragment key={index}>
@@ -135,7 +137,7 @@ const Sidebar = () => {
                       <Box sx={{ color: '#fff' }}>{item.icon}</Box>
                     </Tooltip>
                   </ListItemIcon>
-                  <ListItemText primary={item.text} />
+                  {!isCollapsed && <ListItemText primary={item.text} />} {/* Show text only when expanded */}
                   {item.isGroup && (
                     item === menuItems[2] ? (openProducts ? <ExpandLess /> : <ExpandMore />) :
                     (openOrders ? <ExpandLess /> : <ExpandMore />)

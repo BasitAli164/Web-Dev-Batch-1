@@ -24,7 +24,7 @@ import image from '../../public/image/personal/my.png';
 import { useAuthStore } from '../context/AuthContext';
 import OrderHistory from './OrdersSection';
 
-const UserDashboard = () => {
+const CustomerDashboard = () => {
   const [selectedSection, setSelectedSection] = useState('Profile');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
@@ -143,4 +143,4 @@ const navItemStyles = (isActive) => ({
   },
 });
 
-export default UserDashboard;
+export default CustomerDashboard;

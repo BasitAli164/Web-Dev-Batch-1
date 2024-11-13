@@ -13,7 +13,7 @@ import ContactPage from './components/ContactPage';
 import AboutUsPage from './components/AboutUsPage';
 import Checkout from './components/checkOut/Checkout';
 import Serarch from './components/Serarch';
-import UserDashboard from './userDashboard/UserDashboard';
+import CustomerDashboard from './customerDashboard/CustomerDashboard';
 
 
 
@@ -35,7 +35,7 @@ const App = () => {
         <Route path="/service/product/:id" element={<ProductDetail />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/search" element={<Serarch />} />
-        <Route path="/profile" element={<UserDashboard />} />
+        <Route path="/profile" element={<CustomerDashboard />} />
       </Routes>
       <Footer />
     </Router>
