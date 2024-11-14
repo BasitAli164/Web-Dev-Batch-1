@@ -1,4 +1,3 @@
-// src/components/Analytics.js
 import React from 'react';
 import {
   Chart as ChartJS,
@@ -9,9 +8,9 @@ import {
   Legend,
   LineElement,
   PointElement,
-  ArcElement,  // Import for Pie chart
+  ArcElement,
 } from 'chart.js';
-import { Line, Pie } from 'react-chartjs-2';  // Import Pie chart
+import { Line, Pie } from 'react-chartjs-2';
 
 // Register necessary components
 ChartJS.register(
@@ -25,7 +24,7 @@ ChartJS.register(
   ArcElement  // Register ArcElement for Pie chart
 );
 
-const Analytics = () => {
+const Analytics = ({ collapsed }) => {
   // Sales by Category data for Pie chart
   const categoryData = {
     labels: ['Shoes', 'Clothes', 'Accessories', 'Bags', 'Others'],
@@ -157,58 +156,41 @@ const Analytics = () => {
   return (
     <div
       style={{
-        padding: '20px',
-        background: 'linear-gradient(135deg, #e0f7fa, #f1f8e9)',
-        borderRadius: '15px',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-        marginLeft:"100px"
+        marginLeft: collapsed ? 100 : 250, // Adjust layout based on collapse state
+        paddingTop: 100,
+        transition: 'margin-left 0.3s',
       }}
     >
-      <h2
-        style={{
-          fontFamily: 'Poppins, sans-serif',
-          color: '#333',
-          marginBottom: '20px',
-          textAlign: 'center',
-          letterSpacing: '0.5px',
-        }}
-      >
-        Financial Analytics Dashboard
-      </h2>
+      <h1>Analytics</h1>
 
       <div
         style={{
           display: 'flex',
-          justifyContent: 'space-around',
-          alignItems: 'center',
+          flexDirection: 'row',
           gap: '20px',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap', // Ensures charts wrap on smaller screens
         }}
       >
-        {/* Sales by Category Chart (Pie) */}
-        <div style={{ flex: 1, height: '400px', marginBottom: '30px' }}>
-          <h3
-            style={{
-              fontFamily: 'Poppins, sans-serif',
-              color: '#333',
-              textAlign: 'center',
-            }}
-          >
-            Sales by Category
-          </h3>
-          <Pie data={categoryData} options={{ responsive: true }} />
+        <div
+          style={{
+            width: '48%', // Adjust width for better responsiveness
+            minWidth: '300px', // Set a minimum width for the charts
+            height: 300,
+          }}
+        >
+          <h3>Sales by Category</h3>
+          <Pie data={categoryData} options={options} />
         </div>
 
-        {/* Monthly Profit Trends Chart */}
-        <div style={{ flex: 1, height: '400px', marginBottom: '30px' }}>
-          <h3
-            style={{
-              fontFamily: 'Poppins, sans-serif',
-              color: '#333',
-              textAlign: 'center',
-            }}
-          >
-            Monthly Profit Trends
-          </h3>
+        <div
+          style={{
+            width: '48%', // Adjust width for better responsiveness
+            minWidth: '300px', // Set a minimum width for the charts
+            height: 300,
+          }}
+        >
+          <h3>Monthly Profit Trends</h3>
           <Line data={profitData} options={options} />
         </div>
       </div>
