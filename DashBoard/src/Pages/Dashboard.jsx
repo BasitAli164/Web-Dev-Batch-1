@@ -7,11 +7,9 @@ import OrdersPage from './OrdersPage';
 import SettingsPage from './SettingsPage';
 import Analytics from '../components/Analytics';
 import { Box } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route,  } from 'react-router-dom';
-import Login from '../components/Login'; // Import Login Component
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 const Dashboard = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login state
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
 
@@ -22,14 +20,6 @@ const Dashboard = () => {
   const toggleDrawer = () => {
     setIsDrawerOpen(prev => !prev);
   };
-
-  const handleLoginSuccess = () => {
-    setIsLoggedIn(true); // Set user as logged in
-  };
-
-  if (!isLoggedIn) {
-    return <Login onLoginSuccess={handleLoginSuccess} />;
-  }
 
   return (
     <Router>

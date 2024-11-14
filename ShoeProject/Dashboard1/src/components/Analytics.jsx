@@ -157,7 +157,7 @@ const Analytics = ({ collapsed }) => {
     <div
       style={{
         marginLeft: collapsed ? 100 : 250, // Adjust layout based on collapse state
-        paddingTop: 100,
+        // paddingTop:,
         transition: 'margin-left 0.3s',
       }}
     >
@@ -175,7 +175,7 @@ const Analytics = ({ collapsed }) => {
         <div
           style={{
             width: '48%', // Adjust width for better responsiveness
-            minWidth: '300px', // Set a minimum width for the charts
+            minWidth: '400px', // Set a minimum width for the charts
             height: 300,
           }}
         >
@@ -186,7 +186,7 @@ const Analytics = ({ collapsed }) => {
         <div
           style={{
             width: '48%', // Adjust width for better responsiveness
-            minWidth: '300px', // Set a minimum width for the charts
+            minWidth: '400px', // Set a minimum width for the charts
             height: 300,
           }}
         >
