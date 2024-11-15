@@ -1,11 +1,17 @@
 import React from 'react';
 import { Box, Typography, Grid, Card, CardContent, CardMedia, IconButton } from '@mui/material';
 import { Sports, Pool, Event, LocalBar } from '@mui/icons-material'; // Fixed icon import
+import { useNavigate } from 'react-router-dom';
 import snooker from '../assets/image/snooker.jpg';
 import pool from '../assets/image/pool.jpg';
 import bar from '../assets/image/bar.jpg';
 
 const ServicesPage = () => {
+  const navigate=useNavigate();
+  const handleServiceSelection = (service) => {
+    // Navigate to the BookingPage and pass the selected service
+    navigate('/booking', { state: { service } });
+  };
   return (
     <Box
       sx={{
@@ -28,8 +34,8 @@ const ServicesPage = () => {
         Discover Our Premium Snooker & Entertainment Services
       </Typography>
 
-      {/* Services Grid Layout */}
-      <Grid container spacing={4} justifyContent="center">
+{/* Services Grid Layout */}
+<Grid container spacing={4} justifyContent="center">
         {/* Snooker Tables */}
         <Grid item xs={12} sm={6} md={4}>
           <Card
@@ -43,12 +49,13 @@ const ServicesPage = () => {
                 boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)',
               },
             }}
+            onClick={() => handleServiceSelection('Snooker')}
           >
             <CardMedia
               component="img"
               alt="Snooker Tables"
               height="220"
-              image={`${snooker}`}
+              image={snooker}
               sx={{
                 objectFit: 'cover',
               }}
@@ -82,12 +89,13 @@ const ServicesPage = () => {
                 boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)',
               },
             }}
+            onClick={() => handleServiceSelection('Pool')}
           >
             <CardMedia
               component="img"
               alt="Pool Tables"
               height="220"
-              image={`${pool}`}
+              image={pool}
               sx={{
                 objectFit: 'cover',
               }}
@@ -121,12 +129,13 @@ const ServicesPage = () => {
                 boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)',
               },
             }}
+            onClick={() => handleServiceSelection('Bar & Refreshments')}
           >
             <CardMedia
               component="img"
               alt="Bar & Refreshments"
               height="220"
-              image={`${bar}`}
+              image={bar}
               sx={{
                 objectFit: 'cover',
               }}

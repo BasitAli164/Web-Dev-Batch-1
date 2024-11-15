@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Box, Typography, TextField, Button, Grid, CircularProgress, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, TextField, Button, Grid, CircularProgress, MenuItem, Select, FormControl, InputLabel, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { useLocation } from 'react-router-dom';
 
 const BookingPage = () => {
   const [name, setName] = useState('');
@@ -13,8 +14,17 @@ const BookingPage = () => {
   const [numPlayers, setNumPlayers] = useState('');
   const [service, setService] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [success, setSuccess] = useState(null);
   const [error, setError] = useState('');
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [success, setSuccess] = useState(null);
+  const [confirmationMessage, setConfirmationMessage] = useState('');
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.service) {
+      setService(location.state.service); // Set the service if it was passed through the navigation
+    }
+  }, [location.state]);
 
   // Validate form fields
   const validateForm = () => {
@@ -41,7 +51,6 @@ const BookingPage = () => {
       return false;
     }
 
-    // If service is not 'Bar & Refreshments', check if other fields are filled
     if (service !== 'Bar & Refreshments') {
       if (!tableType || !gameType || !numPlayers) {
         setError('Please fill in all the required fields for table and game selection.');
@@ -74,39 +83,39 @@ const BookingPage = () => {
     setIsLoading(true);
 
     setTimeout(() => {
-      // Prepare the confirmation message, excluding fields if service is 'Bar & Refreshments'
-      let confirmationMessage = `Booking details: \nName: ${name}\nDate: ${date}\nTime: ${time}\nFloor: ${floor}\nDuration: ${duration}\nSpecial Request: ${specialRequest}\nService: ${service}`;
-
+      let message = `Booking details: \nName: ${name}\nDate: ${date}\nTime: ${time}\nFloor: ${floor}\nDuration: ${duration}\nSpecial Request: ${specialRequest}\nService: ${service}`;
       if (service !== 'Bar & Refreshments') {
-        confirmationMessage += `\nTable Type: ${tableType}\nGame Type: ${gameType}\nNumber of Players: ${numPlayers}`;
+        message += `\nTable Type: ${tableType}\nGame Type: ${gameType}\nNumber of Players: ${numPlayers}`;
       }
-
-      const emailConfirmed = window.confirm(
-        `${confirmationMessage}\n\nDo you approve this booking?`
-      );
-
-      if (emailConfirmed) {
-        setSuccess(true); // Simulate successful booking
-        setTimeout(() => setSuccess(null), 2000); // Remove success message after 2 seconds
-      } else {
-        setSuccess(false); // Booking canceled
-        setTimeout(() => setSuccess(null), 2000); // Remove success message after 2 seconds
-      }
-
-      // Reset form fields after confirmation
-      setName('');
-      setDate('');
-      setTime('');
-      setTableType('');
-      setGameType('');
-      setFloor('');
-      setDuration('');
-      setSpecialRequest('');
-      setNumPlayers('');
-      setService('');
-
+      
+      setConfirmationMessage(message);
+      setConfirmationOpen(true);
       setIsLoading(false);
     }, 2000);
+  };
+
+  const handleConfirm = () => {
+    setSuccess(true); // Simulate successful booking
+    setTimeout(() => setSuccess(null), 2000); // Remove success message after 2 seconds
+
+    // Reset form fields after confirmation
+    setName('');
+    setDate('');
+    setTime('');
+    setTableType('');
+    setGameType('');
+    setFloor('');
+    setDuration('');
+    setSpecialRequest('');
+    setNumPlayers('');
+    setService('');
+    setConfirmationOpen(false);
+  };
+
+  const handleCancel = () => {
+    setSuccess(false); // Booking canceled
+    setTimeout(() => setSuccess(null), 2000); // Remove success message after 2 seconds
+    setConfirmationOpen(false);
   };
 
   return (
@@ -340,6 +349,135 @@ const BookingPage = () => {
             {error}
           </Typography>
         )}
+<Dialog
+  open={confirmationOpen}
+  onClose={() => setConfirmationOpen(false)}
+  maxWidth="sm"  // Limit the dialog's width
+  fullWidth
+  sx={{
+    '& .MuiDialog-paper': {
+      borderRadius: '12px',  // Slightly smaller border radius for a more compact look
+      boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
+      minWidth: '280px',  // Ensures the dialog doesn't stretch too wide
+    },
+    '& .MuiDialogContent-root': {
+      maxHeight: '50vh',  // Limit the content height to 50% of the viewport height
+      overflowY: 'auto',  // Allow vertical scrolling
+      padding: '16px', // Adjusted padding to make the content more compact
+    },
+    '& .MuiDialog-paperScrollPaper': {
+      overflowY: 'auto',  // Scrollable content
+    },
+    '&::-webkit-scrollbar': {
+      width: '6px',  // Thinner scrollbar for a cleaner look
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#3498db',  // Blue thumb color
+      borderRadius: '8px',
+    },
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: '#f1f1f1',  // Light gray scrollbar track color
+      borderRadius: '8px',
+    },
+  }}
+>
+  <DialogTitle sx={{
+    fontWeight: '600',
+    color: '#2c3e50',  // Darker color for the title text
+    fontSize: '1.125rem',  // Slightly smaller font for the title
+    textAlign: 'center',
+    padding: '16px 20px',  // Adjusted padding for a tighter layout
+  }}>
+    Confirm Your Booking
+  </DialogTitle>
+
+  <DialogContent sx={{
+    padding: '16px 20px',  // Reduced padding for compact design
+    backgroundColor: '#f9f9f9',
+    overflowY: 'auto',  // Ensure content is scrollable if needed
+  }}>
+    <Typography
+      sx={{
+        fontSize: '0.95rem',  // Slightly smaller font size for a more compact look
+        lineHeight: '1.5',  // Tighter line height for better content fitting
+        color: '#34495e',
+        fontFamily: "'Roboto', sans-serif",
+        whiteSpace: 'pre-line',  // Preserve line breaks
+        textAlign: 'left',  // Align text to the left
+      }}
+    >
+      {confirmationMessage.split('\n').map((line, index) => {
+        const [key, value] = line.split(':'); // Split key-value by colon
+        return (
+          <div key={index} style={{ marginBottom: '10px'   }}>
+            <Typography
+              sx={{
+                fontWeight: '600',  // Make the key bold
+                display: 'inline',
+                color: '#2c3e50',
+                fontSize: '1rem',  // Slightly larger for the key
+              }}
+            >
+              {key}:
+            </Typography>
+            <Typography
+              sx={{
+                fontWeight: 'normal', // Regular weight for the value
+                display: 'inline',
+                color: '#34495e',
+                marginLeft: '8px',  // Add space between key and value
+                fontSize: '1rem',  // Maintain same size for value text
+              }}
+            >
+              {value}
+            </Typography>
+          </div>
+        );
+      })}
+    </Typography>
+  </DialogContent>
+
+  <DialogActions sx={{ padding: '12px 20px', justifyContent: 'center' }}>
+    <Button
+      onClick={handleCancel}
+      color="error"
+      sx={{
+        textTransform: 'none',
+        backgroundColor: '#e74c3c',
+        color: '#fff',
+        padding: '8px 16px',  // Adjusted padding for buttons
+        borderRadius: '6px',  // Rounded corners for the button
+        '&:hover': {
+          backgroundColor: '#c0392b',
+        },
+      }}
+    >
+      Cancel
+    </Button>
+
+    <Button
+      onClick={handleConfirm}
+      color="primary"
+      sx={{
+        textTransform: 'none',
+        backgroundColor: '#3498db',
+        color: '#fff',
+        padding: '8px 16px',  // Adjusted padding for buttons
+        borderRadius: '6px',  // Rounded corners for the button
+        marginLeft: '12px',  // Margin left between buttons
+        '&:hover': {
+          backgroundColor: '#2980b9',
+        },
+      }}
+    >
+      Confirm
+    </Button>
+  </DialogActions>
+</Dialog>
+
+
+
+
 
         {success !== null && (
           <Typography

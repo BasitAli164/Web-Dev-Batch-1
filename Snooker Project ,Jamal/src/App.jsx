@@ -7,6 +7,7 @@ import Footer from './components/Footer'
 import BookingPage from './pages/BookingPage'
 import ServicesPage from './pages/ServicePage'
 import ContactPage from './pages/ContactPage'
+import AboutUs from './pages/AboutPage'
 
 
 
@@ -16,9 +17,11 @@ const App = () => {
       <Header/>
       <Routes>
       <Route path='/' element={<LandingPage/>}/>
-      <Route path="/book" element={<BookingPage/>} />
-        <Route path="/services" element={<ServicesPage />} /> {/* Optional */}
-        <Route path="/contact" element={<ContactPage />} /> {/* Optional */}
+      <Route path="/booking" element={<BookingPage/>} />
+      <Route path="/services" element={<ServicesPage />} /> {/* Optional */}
+      <Route path="/contact" element={<ContactPage />} /> {/* Optional */}
+      <Route path="/about" element={<AboutUs />} /> {/* Optional */}
+        
        </Routes>
       <Footer/>
     </Router>
