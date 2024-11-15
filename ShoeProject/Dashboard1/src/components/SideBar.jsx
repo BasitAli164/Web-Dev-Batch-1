@@ -46,6 +46,7 @@ const Sidebar = ({ isCollapsed, toggleCollapse, isDrawerOpen, toggleDrawer }) =>
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
           height: '100vh',
           transition: 'width 0.3s ease',
+          overflow:'hidden'
         },
       }}
     >
