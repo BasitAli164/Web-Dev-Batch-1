@@ -92,25 +92,11 @@ const LandingPage = () => {
             },
             animation: 'fadeIn 1.5s ease-out', // Fade-in animation for button
           }}
-          onClick={() => navigate('/book')}
+          onClick={() => navigate('/booking')}
         >
           Book Your Table Now
         </Button>
       </Box>
-
-      {/* CSS for smooth animations */}
-      <style jsx>{`
-        @keyframes fadeIn {
-          0% {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </Box>
   );
 };
