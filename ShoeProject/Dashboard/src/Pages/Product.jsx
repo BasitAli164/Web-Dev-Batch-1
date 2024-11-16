@@ -19,6 +19,7 @@ import {
 import { Add, Edit, Delete, Visibility } from '@mui/icons-material';
 import { MaterialReactTable } from 'material-react-table';
 
+// Helper function to generate SKU
 const generateSKU = () => Math.random().toString(36).substr(2, 9).toUpperCase();
 
 const Product = ({ isSidebarCollapsed }) => {
@@ -31,12 +32,13 @@ const Product = ({ isSidebarCollapsed }) => {
     productDescription: '',
     images: '',
     category: '',
-    brand: '',
-    color: '',
-    size: '',
-    stock: '',
-    price: '',
-    sku: '',
+    subcategory: {
+      brand: '',
+      color: '',
+      size: '',
+      stock: '',
+      sku: '',
+    },
     imagePreview: '',
   });
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
@@ -45,12 +47,27 @@ const Product = ({ isSidebarCollapsed }) => {
     // Fetch all products from backend
     axios.get('http://localhost:8000/api/product/get')
       .then(response => {
-        setProducts(response.data);
+        const flattenedProducts = response.data.result.map(product => ({
+          ...product,
+          // Flatten the nested subcategory data for easy access
+          brand: product.Subcategory?.brand,
+          color: product.Subcategory?.color,
+          size: product.Subcategory?.size,
+          sku: product.Subcategory?.sku,
+          stock: product.Subcategory?.stock,
+          price: product.Subcategory?.price,
+        }));
+        setProducts(flattenedProducts);
+        console.log('Flattened Products:', flattenedProducts);
       })
       .catch(error => {
         console.error('Error fetching products:', error);
       });
   }, []);
+
+  useEffect(() => {
+    console.log('Products state:', products);
+  }, [products]);
 
   const handleOpenDialog = (product = null) => {
     setCurrentProduct(
@@ -60,12 +77,13 @@ const Product = ({ isSidebarCollapsed }) => {
         productDescription: '',
         images: '',
         category: '',
-        brand: '',
-        color: '',
-        size: '',
-        stock: '',
-        price: '',
-        sku: generateSKU(),
+        subcategory: {
+          brand: '',
+          color: '',
+          size: '',
+          stock: '',
+          sku: generateSKU(),
+        },
         imagePreview: '',
       }
     );
@@ -81,12 +99,13 @@ const Product = ({ isSidebarCollapsed }) => {
       productDescription: '',
       images: '',
       category: '',
-      brand: '',
-      color: '',
-      size: '',
-      stock: '',
-      price: '',
-      sku: '',
+      subcategory: {
+        brand: '',
+        color: '',
+        size: '',
+        stock: '',
+        sku: '',
+      },
       imagePreview: '',
     });
   };
@@ -95,7 +114,7 @@ const Product = ({ isSidebarCollapsed }) => {
     const productData = { ...currentProduct };
 
     if (isEditMode) {
-      axios.put(`http://localhost:8000/api/product/update/${currentProduct.id}`, productData)
+      axios.put(`http://localhost:8000/api/product/update/${currentProduct._id}`, productData)
         .then(response => {
           setProducts(products.map(prod => (prod.id === currentProduct.id ? response.data : prod)));
           handleCloseDialog();
@@ -162,6 +181,7 @@ const Product = ({ isSidebarCollapsed }) => {
     }
   };
 
+  // Define columns for MaterialReactTable
   const columns = [
     {
       header: 'Actions',
@@ -186,12 +206,39 @@ const Product = ({ isSidebarCollapsed }) => {
         </Box>
       ),
     },
-    { accessorKey: 'images', header: 'Image', size: 100, Cell: ({ cell }) => <img src={cell.getValue()} alt="Product" style={{ width: 50, height: 50, objectFit: 'cover' }} /> },
+    {
+      accessorKey: 'images',
+      header: 'Image',
+      size: 100,
+      Cell: ({ cell }) => {
+        // Assuming the first image is the one you want
+        const imageUrl = cell.getValue()[0]; 
+    
+        // Replace backslashes with forward slashes
+        const formattedImageUrl = imageUrl.replace(/\\/g, '/'); 
+    
+        // If the images are stored on a server, prepend the base URL
+        const fullImageUrl = `http://localhost:8000/${formattedImageUrl}`; 
+    
+        return (
+          <img
+            src={fullImageUrl}
+            alt={products.productName}
+            style={{ width: 50, height: 50, objectFit: 'cover' }}
+          />
+        );
+      },
+    },
+    
     { accessorKey: 'productName', header: 'Product Name', size: 140 },
+    { accessorKey: 'productDescription', header: 'Description', size: 180 },
+    { accessorKey: 'category', header: 'Category', size: 100 },
+    { accessorKey: 'brand', header: 'Brand', size: 100 },
+    { accessorKey: 'color', header: 'Color', size: 80 },
+    { accessorKey: 'size', header: 'Size', size: 60 },
+    { accessorKey: 'sku', header: 'SKU', size: 100 },
     { accessorKey: 'stock', header: 'Stock', size: 80 },
     { accessorKey: 'price', header: 'Price (PKR)', size: 100 },
-    { accessorKey: 'color', header: 'Color', size: 50 },
-    { accessorKey: 'brand', header: 'Brand', size: 50 },
   ];
 
   return (
@@ -245,6 +292,7 @@ const Product = ({ isSidebarCollapsed }) => {
         />
       </Box>
 
+      {/* Product Add/Edit Dialog */}
       <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
         <DialogTitle>{isEditMode ? 'Edit Product' : 'Add Product'}</DialogTitle>
         <DialogContent sx={{ maxHeight: 450, overflowY: 'auto' }}>
@@ -254,54 +302,16 @@ const Product = ({ isSidebarCollapsed }) => {
             margin="normal"
             value={currentProduct.productName}
             onChange={(e) => setCurrentProduct({ ...currentProduct, productName: e.target.value })}
-            sx={{ mb: 2 }}
           />
           <TextField
             label="Description"
             fullWidth
             margin="normal"
+            multiline
+            rows={3}
             value={currentProduct.productDescription}
             onChange={(e) => setCurrentProduct({ ...currentProduct, productDescription: e.target.value })}
-            sx={{ mb: 2 }}
           />
-          <TextField
-            label="Image URL"
-            fullWidth
-            margin="normal"
-            value={currentProduct.images}
-            onChange={handleImageURLChange}
-            sx={{ mb: 2 }}
-          />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageFileChange}
-            style={{ display: 'none' }}
-            id="fileInput"
-          />
-          <Button
-            variant="outlined"
-            color="primary"
-            component="span"
-            sx={{ mb: 2 }}
-            onClick={() => document.getElementById('fileInput').click()}
-          >
-            Upload Image
-          </Button>
-          {currentProduct.imagePreview && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-              <img
-                src={currentProduct.imagePreview}
-                alt="Preview"
-                style={{
-                  width: '100px',
-                  height: '100px',
-                  objectFit: 'cover',
-                  borderRadius: '8px',
-                }}
-              />
-            </Box>
-          )}
           <FormControl fullWidth margin="normal">
             <InputLabel>Category</InputLabel>
             <Select
@@ -312,127 +322,116 @@ const Product = ({ isSidebarCollapsed }) => {
               <MenuItem value="women">Women</MenuItem>
             </Select>
           </FormControl>
+
+          {/* Subcategory Fields */}
           <FormControl fullWidth margin="normal">
             <InputLabel>Brand</InputLabel>
             <Select
-              value={currentProduct.brand}
-              onChange={(e) => setCurrentProduct({ ...currentProduct, brand: e.target.value })}
+              value={currentProduct.subcategory?.brand || ''}
+              onChange={(e) => setCurrentProduct({
+                ...currentProduct,
+                subcategory: { ...currentProduct.subcategory, brand: e.target.value },
+              })}
             >
-              <MenuItem value="Brand 1">Brand 1</MenuItem>
-              <MenuItem value="Brand 2">Brand 2</MenuItem>
+              <MenuItem value="Adidas">Adidas</MenuItem>
+              <MenuItem value="Nike">Nike</MenuItem>
+              <MenuItem value="Puma">Puma</MenuItem>
             </Select>
           </FormControl>
+
           <TextField
             label="Color"
             fullWidth
             margin="normal"
-            value={currentProduct.color}
-            onChange={(e) => setCurrentProduct({ ...currentProduct, color: e.target.value })}
+            value={currentProduct.subcategory?.color || ''}
+            onChange={(e) => setCurrentProduct({
+              ...currentProduct,
+              subcategory: { ...currentProduct.subcategory, color: e.target.value },
+            })}
           />
           <TextField
             label="Size"
             fullWidth
             margin="normal"
-            value={currentProduct.size}
-            onChange={(e) => setCurrentProduct({ ...currentProduct, size: e.target.value })}
+            value={currentProduct.subcategory?.size || ''}
+            onChange={(e) => setCurrentProduct({
+              ...currentProduct,
+              subcategory: { ...currentProduct.subcategory, size: e.target.value },
+            })}
           />
           <TextField
             label="Stock"
             fullWidth
             margin="normal"
-            type="number"
-            value={currentProduct.stock}
-            onChange={(e) => setCurrentProduct({ ...currentProduct, stock: e.target.value })}
+            value={currentProduct.subcategory?.stock || ''}
+            onChange={(e) => setCurrentProduct({
+              ...currentProduct,
+              subcategory: { ...currentProduct.subcategory, stock: e.target.value },
+            })}
           />
           <TextField
-            label="Price"
+            label="SKU"
             fullWidth
             margin="normal"
-            type="number"
-            value={currentProduct.price}
-            onChange={(e) => setCurrentProduct({ ...currentProduct, price: e.target.value })}
+            value={currentProduct.subcategory?.sku || ''}
+            onChange={(e) => setCurrentProduct({
+              ...currentProduct,
+              subcategory: { ...currentProduct.subcategory, sku: e.target.value },
+            })}
           />
         </DialogContent>
+
         <DialogActions>
           <Button onClick={handleCloseDialog} color="secondary">Cancel</Button>
-          <Button onClick={handleSaveProduct} color="primary">Save</Button>
+          <Button onClick={handleSaveProduct} color="primary">{isEditMode ? 'Update' : 'Add'}</Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog open={isDetailDialogOpen} onClose={handleCloseDetailDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          <Typography variant="h5" align="center" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-            Product Details
-          </Typography>
-        </DialogTitle>
-        <DialogContent sx={{ maxHeight: 450, overflowY: 'auto' }}>
+      {/* Product Detail Dialog */}
+      <Dialog open={isDetailDialogOpen} onClose={handleCloseDetailDialog}>
+        <DialogTitle>Product Details</DialogTitle>
+        <DialogContent>
           <Grid container spacing={2}>
-            <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-              <Box
-                component="img"
-                src={currentProduct.images || 'https://via.placeholder.com/150'}
-                alt="Product"
-                sx={{
-                  width: { xs: 120, sm: 150 },
-                  height: { xs: 120, sm: 150 },
-                  objectFit: 'cover',
-                  borderRadius: 2,
-                  boxShadow: 3,
-                }}
-              />
+            <Grid item xs={12} md={6}>
+              <Typography variant="h6">Product Name</Typography>
+              <Typography>{currentProduct.productName}</Typography>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="h6">Category</Typography>
+              <Typography>{currentProduct.category}</Typography>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="h6">Brand</Typography>
+              <Typography>{currentProduct.subcategory?.brand}</Typography>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="h6">Color</Typography>
+              <Typography>{currentProduct.subcategory?.color}</Typography>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="h6">Size</Typography>
+              <Typography>{currentProduct.subcategory?.size}</Typography>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="h6">Stock</Typography>
+              <Typography>{currentProduct.subcategory?.stock}</Typography>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="h6">SKU</Typography>
+              <Typography>{currentProduct.subcategory?.sku}</Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="h6" color="text.secondary" gutterBottom>
-                <strong>Product Name:</strong> {currentProduct.productName}
-              </Typography>
+              <Typography variant="h6">Description</Typography>
+              <Typography>{currentProduct.productDescription}</Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="body1" color="text.secondary">
-                <strong>Description:</strong> {currentProduct.productDescription}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body1" color="text.secondary">
-                <strong>Category:</strong> {currentProduct.category}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body1" color="text.secondary">
-                <strong>Brand:</strong> {currentProduct.brand}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body1" color="text.secondary">
-                <strong>Color:</strong> {currentProduct.color}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body1" color="text.secondary">
-                <strong>Size:</strong> {currentProduct.size}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body1" color="text.secondary">
-                <strong>Stock:</strong> {currentProduct.stock}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body1" color="text.secondary">
-                <strong>Price:</strong> PKR {currentProduct.price}
-              </Typography>
+              <Typography variant="h6">Price</Typography>
+              <Typography>{currentProduct.price}</Typography>
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions sx={{ justifyContent: 'center', py: 2 }}>
-          <Button
-            onClick={handleCloseDetailDialog}
-            variant="contained"
-            color="primary"
-            size="large"
-            sx={{ borderRadius: '20px', px: 4, py: 1 }}
-          >
-            Close
-          </Button>
+        <DialogActions>
+          <Button onClick={handleCloseDetailDialog} color="secondary">Close</Button>
         </DialogActions>
       </Dialog>
     </Box>
