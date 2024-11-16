@@ -7,7 +7,7 @@ import SettingsPage from './SettingsPage';
 import Analytics from '../components/Analytics';
 import { Box } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Product from './Product';
+import ProductPage from './ProductPage';
 
 const Dashboard = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -30,7 +30,7 @@ const Dashboard = () => {
           <Routes>
             <Route path="/" element={<Analytics />} />
             <Route path="/users" element={<UserPage />} />
-            <Route path="/products" element={<Product />} />
+            <Route path="/products" element={<ProductPage />} />
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Routes>
