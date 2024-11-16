@@ -1,0 +1,442 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  IconButton,
+  Grid,
+} from '@mui/material';
+import { Add, Edit, Delete, Visibility } from '@mui/icons-material';
+import { MaterialReactTable } from 'material-react-table';
+
+const generateSKU = () => Math.random().toString(36).substr(2, 9).toUpperCase();
+
+const Product = ({ isSidebarCollapsed }) => {
+  const [products, setProducts] = useState([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState({
+    id: '',
+    productName: '',
+    productDescription: '',
+    images: '',
+    category: '',
+    brand: '',
+    color: '',
+    size: '',
+    stock: '',
+    price: '',
+    sku: '',
+    imagePreview: '',
+  });
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
+
+  useEffect(() => {
+    // Fetch all products from backend
+    axios.get('http://localhost:8000/api/product/get')
+      .then(response => {
+        setProducts(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching products:', error);
+      });
+  }, []);
+
+  const handleOpenDialog = (product = null) => {
+    setCurrentProduct(
+      product || {
+        id: '',
+        productName: '',
+        productDescription: '',
+        images: '',
+        category: '',
+        brand: '',
+        color: '',
+        size: '',
+        stock: '',
+        price: '',
+        sku: generateSKU(),
+        imagePreview: '',
+      }
+    );
+    setIsEditMode(!!product);
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+    setCurrentProduct({
+      id: '',
+      productName: '',
+      productDescription: '',
+      images: '',
+      category: '',
+      brand: '',
+      color: '',
+      size: '',
+      stock: '',
+      price: '',
+      sku: '',
+      imagePreview: '',
+    });
+  };
+
+  const handleSaveProduct = () => {
+    const productData = { ...currentProduct };
+
+    if (isEditMode) {
+      axios.put(`http://localhost:8000/api/product/update/${currentProduct.id}`, productData)
+        .then(response => {
+          setProducts(products.map(prod => (prod.id === currentProduct.id ? response.data : prod)));
+          handleCloseDialog();
+        })
+        .catch(error => {
+          console.error('Error updating product:', error);
+        });
+    } else {
+      axios.post('http://localhost:8000/api/product/add', productData)
+        .then(response => {
+          setProducts([...products, response.data]);
+          handleCloseDialog();
+        })
+        .catch(error => {
+          console.error('Error adding product:', error);
+        });
+    }
+  };
+
+  const handleDeleteProduct = (productId) => {
+    axios.delete(`http://localhost:8000/api/product/del/${productId}`)
+      .then(() => {
+        setProducts(products.filter(product => product.id !== productId));
+      })
+      .catch(error => {
+        console.error('Error deleting product:', error);
+      });
+  };
+
+  const handleOpenDetailDialog = (product) => {
+    axios.get(`http://localhost:8000/api/product/get/${product.id}`)
+      .then(response => {
+        setCurrentProduct(response.data);
+        setIsDetailDialogOpen(true);
+      })
+      .catch(error => {
+        console.error('Error fetching product details:', error);
+      });
+  };
+
+  const handleCloseDetailDialog = () => {
+    setIsDetailDialogOpen(false);
+  };
+
+  // Handle Image URL Change
+  const handleImageURLChange = (e) => {
+    setCurrentProduct({
+      ...currentProduct,
+      images: e.target.value,
+      imagePreview: e.target.value,
+    });
+  };
+
+  // Handle Local Image File Change
+  const handleImageFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const fileURL = URL.createObjectURL(file); // Create a URL for the selected file
+      setCurrentProduct({
+        ...currentProduct,
+        images: fileURL, // Store the URL of the file
+        imagePreview: fileURL, // Store the preview URL of the file
+      });
+    }
+  };
+
+  const columns = [
+    {
+      header: 'Actions',
+      size: 100,
+      Cell: ({ row }) => (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Visibility
+            color="info"
+            onClick={() => handleOpenDetailDialog(row.original)}
+            sx={{ cursor: 'pointer', marginRight: 1 }}
+          />
+          <Edit
+            color="primary"
+            onClick={() => handleOpenDialog(row.original)}
+            sx={{ cursor: 'pointer', marginRight: 1 }}
+          />
+          <Delete
+            color="error"
+            onClick={() => handleDeleteProduct(row.original.id)}
+            sx={{ cursor: 'pointer' }}
+          />
+        </Box>
+      ),
+    },
+    { accessorKey: 'images', header: 'Image', size: 100, Cell: ({ cell }) => <img src={cell.getValue()} alt="Product" style={{ width: 50, height: 50, objectFit: 'cover' }} /> },
+    { accessorKey: 'productName', header: 'Product Name', size: 140 },
+    { accessorKey: 'stock', header: 'Stock', size: 80 },
+    { accessorKey: 'price', header: 'Price (PKR)', size: 100 },
+    { accessorKey: 'color', header: 'Color', size: 50 },
+    { accessorKey: 'brand', header: 'Brand', size: 50 },
+  ];
+
+  return (
+    <Box padding={2} sx={{
+      display: 'flex', flexDirection: 'column', height: '100vh',
+      marginLeft: { xs: 0, md: isSidebarCollapsed ? '90px' : '230px' },
+      marginTop: '80px', transition: 'margin-left 0.3s ease', overflow: 'hidden'
+    }}>
+      <Box sx={{
+        position: 'relative',
+        height: 'calc(100vh - 160px)',
+        overflow: 'hidden',
+      }}>
+        <Button
+          startIcon={<Add />}
+          variant="contained"
+          color="primary"
+          onClick={() => handleOpenDialog()}
+          sx={{
+            position: 'absolute',
+            top: 16,
+            left: 16,
+            zIndex: 2,
+            padding: '8px',
+            borderRadius: '4px',
+            boxShadow: 3,
+          }}
+        >
+          Add Product
+        </Button>
+
+        <MaterialReactTable
+          columns={columns}
+          data={products}
+          enableSorting
+          enablePagination
+          muiTablePaperProps={{
+            sx: { overflowX: 'auto', maxWidth: '100%', maxHeight: 'calc(100vh - 160px)' }
+          }}
+          muiTableContainerProps={{
+            sx: { maxHeight: 'calc(100vh - 160px)', overflowX: 'auto', overflowY: 'auto', position: 'relative' }
+          }}
+          muiTableHeadProps={{
+            sx: {
+              position: 'sticky',
+              top: 0,
+              backgroundColor: 'white',
+              zIndex: 1,
+            },
+          }}
+        />
+      </Box>
+
+      <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
+        <DialogTitle>{isEditMode ? 'Edit Product' : 'Add Product'}</DialogTitle>
+        <DialogContent sx={{ maxHeight: 450, overflowY: 'auto' }}>
+          <TextField
+            label="Product Name"
+            fullWidth
+            margin="normal"
+            value={currentProduct.productName}
+            onChange={(e) => setCurrentProduct({ ...currentProduct, productName: e.target.value })}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Description"
+            fullWidth
+            margin="normal"
+            value={currentProduct.productDescription}
+            onChange={(e) => setCurrentProduct({ ...currentProduct, productDescription: e.target.value })}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Image URL"
+            fullWidth
+            margin="normal"
+            value={currentProduct.images}
+            onChange={handleImageURLChange}
+            sx={{ mb: 2 }}
+          />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageFileChange}
+            style={{ display: 'none' }}
+            id="fileInput"
+          />
+          <Button
+            variant="outlined"
+            color="primary"
+            component="span"
+            sx={{ mb: 2 }}
+            onClick={() => document.getElementById('fileInput').click()}
+          >
+            Upload Image
+          </Button>
+          {currentProduct.imagePreview && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+              <img
+                src={currentProduct.imagePreview}
+                alt="Preview"
+                style={{
+                  width: '100px',
+                  height: '100px',
+                  objectFit: 'cover',
+                  borderRadius: '8px',
+                }}
+              />
+            </Box>
+          )}
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Category</InputLabel>
+            <Select
+              value={currentProduct.category}
+              onChange={(e) => setCurrentProduct({ ...currentProduct, category: e.target.value })}
+            >
+              <MenuItem value="men">Men</MenuItem>
+              <MenuItem value="women">Women</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Brand</InputLabel>
+            <Select
+              value={currentProduct.brand}
+              onChange={(e) => setCurrentProduct({ ...currentProduct, brand: e.target.value })}
+            >
+              <MenuItem value="Brand 1">Brand 1</MenuItem>
+              <MenuItem value="Brand 2">Brand 2</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            label="Color"
+            fullWidth
+            margin="normal"
+            value={currentProduct.color}
+            onChange={(e) => setCurrentProduct({ ...currentProduct, color: e.target.value })}
+          />
+          <TextField
+            label="Size"
+            fullWidth
+            margin="normal"
+            value={currentProduct.size}
+            onChange={(e) => setCurrentProduct({ ...currentProduct, size: e.target.value })}
+          />
+          <TextField
+            label="Stock"
+            fullWidth
+            margin="normal"
+            type="number"
+            value={currentProduct.stock}
+            onChange={(e) => setCurrentProduct({ ...currentProduct, stock: e.target.value })}
+          />
+          <TextField
+            label="Price"
+            fullWidth
+            margin="normal"
+            type="number"
+            value={currentProduct.price}
+            onChange={(e) => setCurrentProduct({ ...currentProduct, price: e.target.value })}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="secondary">Cancel</Button>
+          <Button onClick={handleSaveProduct} color="primary">Save</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={isDetailDialogOpen} onClose={handleCloseDetailDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          <Typography variant="h5" align="center" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+            Product Details
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ maxHeight: 450, overflowY: 'auto' }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+              <Box
+                component="img"
+                src={currentProduct.images || 'https://via.placeholder.com/150'}
+                alt="Product"
+                sx={{
+                  width: { xs: 120, sm: 150 },
+                  height: { xs: 120, sm: 150 },
+                  objectFit: 'cover',
+                  borderRadius: 2,
+                  boxShadow: 3,
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6" color="text.secondary" gutterBottom>
+                <strong>Product Name:</strong> {currentProduct.productName}
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="body1" color="text.secondary">
+                <strong>Description:</strong> {currentProduct.productDescription}
+              </Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="body1" color="text.secondary">
+                <strong>Category:</strong> {currentProduct.category}
+              </Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="body1" color="text.secondary">
+                <strong>Brand:</strong> {currentProduct.brand}
+              </Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="body1" color="text.secondary">
+                <strong>Color:</strong> {currentProduct.color}
+              </Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="body1" color="text.secondary">
+                <strong>Size:</strong> {currentProduct.size}
+              </Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="body1" color="text.secondary">
+                <strong>Stock:</strong> {currentProduct.stock}
+              </Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="body1" color="text.secondary">
+                <strong>Price:</strong> PKR {currentProduct.price}
+              </Typography>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'center', py: 2 }}>
+          <Button
+            onClick={handleCloseDetailDialog}
+            variant="contained"
+            color="primary"
+            size="large"
+            sx={{ borderRadius: '20px', px: 4, py: 1 }}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+};
+
+export default Product;
