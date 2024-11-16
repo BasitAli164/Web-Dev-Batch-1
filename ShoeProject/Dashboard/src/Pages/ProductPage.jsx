@@ -89,21 +89,22 @@ const ProductPage = ({ isSidebarCollapsed }) => {
     });
   };
 
-  const handleSaveProduct = () => {
-    const productData = { ...currentProduct };
+  const handleSaveProduct = (productData) => {
+    console.log('Saving product data:', productData);
 
     if (isEditMode) {
+      if (!currentProduct.id) {
+        console.error('Error: currentProduct.id is missing');
+        return; // Exit if id is missing
+      }
       CRUDOperations.updateProduct(productData, setProducts, currentProduct);
-      
     } else {
       CRUDOperations.addProduct(productData, setProducts);
     }
-
     handleCloseDialog();
   };
 
   const handleDeleteProduct = (productId) => {
-    console.log('Deleting product with id:', productId);
     CRUDOperations.deleteProduct(productId, setProducts);
   };
 
@@ -157,7 +158,6 @@ const ProductPage = ({ isSidebarCollapsed }) => {
         onSave={handleSaveProduct}
         currentProduct={currentProduct}
         isEditMode={isEditMode}
-        handleProductChange={(key, value) => setCurrentProduct(prev => ({ ...prev, [key]: value }))}
       />
 
       {/* Product Detail Dialog */}

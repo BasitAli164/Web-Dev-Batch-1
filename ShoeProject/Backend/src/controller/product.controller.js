@@ -5,7 +5,7 @@ import Reviwe from '../model/reviwe.model.js'
 
 export const addproduct=async(req,res,next)=>{
     const {productName,productDescription,category,brand,color,size,stock,price,rating,comment}=req.body;
-    console.log("product Name",productName)
+    console.log("req.body",req.body)
     
     try {
     let images=[];
