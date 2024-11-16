@@ -27,7 +27,7 @@ const Product = ({ isSidebarCollapsed }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentProduct, setCurrentProduct] = useState({
-    id: '',
+    _id: '',
     productName: '',
     productDescription: '',
     images: '',
@@ -72,7 +72,7 @@ const Product = ({ isSidebarCollapsed }) => {
   const handleOpenDialog = (product = null) => {
     setCurrentProduct(
       product || {
-        id: '',
+        _id: '',
         productName: '',
         productDescription: '',
         images: '',
@@ -94,7 +94,7 @@ const Product = ({ isSidebarCollapsed }) => {
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     setCurrentProduct({
-      id: '',
+      _id: '',
       productName: '',
       productDescription: '',
       images: '',
@@ -112,11 +112,13 @@ const Product = ({ isSidebarCollapsed }) => {
 
   const handleSaveProduct = () => {
     const productData = { ...currentProduct };
+    console.log('Product Data:', productData);
 
     if (isEditMode) {
+      // Update the product using _id
       axios.put(`http://localhost:8000/api/product/update/${currentProduct._id}`, productData)
         .then(response => {
-          setProducts(products.map(prod => (prod.id === currentProduct.id ? response.data : prod)));
+          setProducts(products.map(prod => (prod._id === currentProduct._id ? response.data.result : prod)));
           handleCloseDialog();
         })
         .catch(error => {
@@ -135,9 +137,10 @@ const Product = ({ isSidebarCollapsed }) => {
   };
 
   const handleDeleteProduct = (productId) => {
+    // Delete using _id
     axios.delete(`http://localhost:8000/api/product/del/${productId}`)
       .then(() => {
-        setProducts(products.filter(product => product.id !== productId));
+        setProducts(products.filter(product => product._id !== productId));
       })
       .catch(error => {
         console.error('Error deleting product:', error);
@@ -145,7 +148,7 @@ const Product = ({ isSidebarCollapsed }) => {
   };
 
   const handleOpenDetailDialog = (product) => {
-    axios.get(`http://localhost:8000/api/product/get/${product.id}`)
+    axios.get(`http://localhost:8000/api/product/get/${product._id}`)
       .then(response => {
         setCurrentProduct(response.data);
         setIsDetailDialogOpen(true);
@@ -200,36 +203,42 @@ const Product = ({ isSidebarCollapsed }) => {
           />
           <Delete
             color="error"
-            onClick={() => handleDeleteProduct(row.original.id)}
+            onClick={() => handleDeleteProduct(row.original._id)}  // Use _id here
             sx={{ cursor: 'pointer' }}
           />
         </Box>
       ),
     },
     {
-      accessorKey: 'images',
+      accessorKey: 'images', // The key from your data that contains the image path
       header: 'Image',
       size: 100,
       Cell: ({ cell }) => {
-        // Assuming the first image is the one you want
-        const imageUrl = cell.getValue()[0]; 
+        // Assuming the image is stored as an array, and we want the first image
+        const imageUrl = cell.getValue()[0]; // Get the first image URL from the array
     
-        // Replace backslashes with forward slashes
+        // Replace backslashes with forward slashes (this should ideally be handled by the backend)
         const formattedImageUrl = imageUrl.replace(/\\/g, '/'); 
     
-        // If the images are stored on a server, prepend the base URL
-        const fullImageUrl = `http://localhost:8000/${formattedImageUrl}`; 
+        // Construct the full URL for the image
+        const fullImageUrl = `http://localhost:8000/${formattedImageUrl}`;
+    
+        // Log to verify the full image URL is correct
+        console.log('Full Image URL:', fullImageUrl);  // Check this URL in the browser
     
         return (
           <img
             src={fullImageUrl}
-            alt={products.productName}
-            style={{ width: 50, height: 50, objectFit: 'cover' }}
+            alt="Product"
+            style={{
+              width: 50, // Set width for the image
+              height: 50, // Set height for the image
+              objectFit: 'cover', // Ensure the image fits within the box without distortion
+            }}
           />
         );
       },
     },
-    
     { accessorKey: 'productName', header: 'Product Name', size: 140 },
     { accessorKey: 'productDescription', header: 'Description', size: 180 },
     { accessorKey: 'category', header: 'Category', size: 100 },
@@ -389,51 +398,52 @@ const Product = ({ isSidebarCollapsed }) => {
 
       {/* Product Detail Dialog */}
       <Dialog open={isDetailDialogOpen} onClose={handleCloseDetailDialog}>
-        <DialogTitle>Product Details</DialogTitle>
-        <DialogContent>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <Typography variant="h6">Product Name</Typography>
-              <Typography>{currentProduct.productName}</Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="h6">Category</Typography>
-              <Typography>{currentProduct.category}</Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="h6">Brand</Typography>
-              <Typography>{currentProduct.subcategory?.brand}</Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="h6">Color</Typography>
-              <Typography>{currentProduct.subcategory?.color}</Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="h6">Size</Typography>
-              <Typography>{currentProduct.subcategory?.size}</Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="h6">Stock</Typography>
-              <Typography>{currentProduct.subcategory?.stock}</Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="h6">SKU</Typography>
-              <Typography>{currentProduct.subcategory?.sku}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">Description</Typography>
-              <Typography>{currentProduct.productDescription}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">Price</Typography>
-              <Typography>{currentProduct.price}</Typography>
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDetailDialog} color="secondary">Close</Button>
-        </DialogActions>
-      </Dialog>
+  <DialogTitle>Product Details</DialogTitle>
+  <DialogContent>
+    <Grid container spacing={2}>
+      <Grid item xs={12} md={6}>
+        <Typography variant="h6">Product Name</Typography>
+        <Typography>{currentProduct.productName || "N/A"}</Typography>
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Typography variant="h6">Category</Typography>
+        <Typography>{currentProduct.category || "N/A"}</Typography>
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Typography variant="h6">Brand</Typography>
+        <Typography>{currentProduct.subcategory?.brand || "N/A"}</Typography>
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Typography variant="h6">Color</Typography>
+        <Typography>{currentProduct.subcategory?.color || "N/A"}</Typography>
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Typography variant="h6">Size</Typography>
+        <Typography>{currentProduct.subcategory?.size || "N/A"}</Typography>
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Typography variant="h6">Stock</Typography>
+        <Typography>{currentProduct.subcategory?.stock || "N/A"}</Typography>
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Typography variant="h6">SKU</Typography>
+        <Typography>{currentProduct.subcategory?.sku || "N/A"}</Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="h6">Description</Typography>
+        <Typography>{currentProduct.productDescription || "N/A"}</Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="h6">Price</Typography>
+        <Typography>{currentProduct.price || "N/A"}</Typography>
+      </Grid>
+    </Grid>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseDetailDialog} color="secondary">Close</Button>
+  </DialogActions>
+</Dialog>
+
     </Box>
   );
 };
