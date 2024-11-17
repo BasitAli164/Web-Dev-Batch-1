@@ -10,7 +10,7 @@ const routerPro=express.Router()
 //     res.send("hellow i am comming")
 
 // });
-routerPro.post('/add', upload.single('file'), addproduct);
+routerPro.post('/add', upload.single('images'), addproduct);
 routerPro.get('/get/:id',getProductById);
 routerPro.get('/get',getProduct)
 routerPro.delete('/del/:id',deleteProduct);

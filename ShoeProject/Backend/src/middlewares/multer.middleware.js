@@ -45,7 +45,7 @@ const fileFilter = (req, file, cb) => {
     if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
-        cb(new Error('Invalid file type. Only PNG, JPG, JPEG, and AVIF are allowed'), false);
+        cb(new Error('Invalid file type. Only PNG, JPG, JPEG, and webp are allowed'), false);
     }
 }
 

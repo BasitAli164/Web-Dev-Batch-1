@@ -29,7 +29,7 @@ const ProductPage = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:8000/api/product/get');
+      const res = await axios.get('http://localhost:8000/api/product/fetch');
       console.log("Fetched Data:", res.data);
       if (res.data && res.data.result) {
         setProducts(res.data.result); // Set products from the API response

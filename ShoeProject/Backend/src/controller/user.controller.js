@@ -166,7 +166,7 @@ export const viewAllUser = async (req, res, next) => {
     const allUser = await User.find().populate('wishList')
     if (!allUser) {
       return res.status(400).json({
-        status: 400,
+        status: 400,  
         message: "User not Found"
 
       })
