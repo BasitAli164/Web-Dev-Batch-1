@@ -22,7 +22,12 @@ const Dashboard = () => {
   };
 
   return (
-    <Router>
+    <Router
+      future={{
+        v7_startTransition: true,      // Opt-in to startTransition feature
+        v7_relativeSplatPath: true,    // Opt-in to relative splat path feature
+      }}
+    >
       <Box display="flex">
         <Sidebar isCollapsed={isCollapsed} isDrawerOpen={isDrawerOpen} toggleCollapse={toggleSidebar} toggleDrawer={toggleDrawer} />
         <Box sx={{ flexGrow: 1, width: isCollapsed ? 'calc(100% - 90px)' : 'calc(100% - 250px)', transition: 'width 0.3s' }}>

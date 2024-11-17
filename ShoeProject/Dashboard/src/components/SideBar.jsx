@@ -83,8 +83,7 @@ const Sidebar = ({ isCollapsed, toggleCollapse, isDrawerOpen, toggleDrawer }) =>
             {menuItems.map((item, index) => (
               <React.Fragment key={index}>
                 <ListItem
-                  button
-                  component={Link}
+                  component={Link}  // Using Link here
                   to={item.path}
                   sx={{
                     '&:hover': {
@@ -110,8 +109,7 @@ const Sidebar = ({ isCollapsed, toggleCollapse, isDrawerOpen, toggleDrawer }) =>
         {/* Logout Icon at the Bottom */}
         <Box>
           <ListItem
-            button
-            component={Link}
+            component={Link}  // Using Link here
             to="/logout"
             sx={{
               '&:hover': {

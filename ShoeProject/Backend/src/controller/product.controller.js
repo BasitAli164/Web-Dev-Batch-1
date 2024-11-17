@@ -3,68 +3,126 @@ import Subcategories from '../model/subcategories.model.js'
 import Reviwe from '../model/reviwe.model.js'
 
 
-export const addproduct=async(req,res,next)=>{
-    const {productName,productDescription,category,brand,color,size,stock,price,rating,comment}=req.body;
-    console.log("req.body",req.body)
+// export const addproduct=async(req,res,next)=>{
+//     const {productName,productDescription,category,brand,color,size,stock,price,rating,comment}=req.body;
+//     console.log("req.body",req.body)
     
-    try {
-    let images=[];
-        if(req.files){
-            images=req.files.map((file)=>file.path);
-        }
-console.log("images",req.files)    
-    const subCategory=new Subcategories({
-            brand,
-            color,
-            size,
-            stock,
-            price,
-            sku:req.body.sku,
-        })
-    const savedSubCategory=await subCategory.save();
+    
+//     try {
+//     let images=[];
+//         if(req.files){
 
-        const review=new Reviwe({
-            rating,
-            comment,
-        })
-    const saveReview=await review.save();
+//             images=req.files.map((file)=>file.path);
+//         }
+// console.log("images",req.files)    
+//     const subCategory=new Subcategories({
+//             brand,
+//             color,
+//             size,
+//             stock,
+//             price,
+//             sku:req.body.sku,
+//         })
+//     const savedSubCategory=await subCategory.save();
+
+//         const review=new Reviwe({
+//             rating,
+//             comment,
+//         })
+//     const saveReview=await review.save();
 
       
 
 
-    const product=new Product({
-            productName,
-            productDescription,
-            category,
-            images,
-            Subcategory:savedSubCategory,
-            review:saveReview,
+//     const product=new Product({
+//             productName,
+//             productDescription,
+//             category,
+//             images,
+//             Subcategory:savedSubCategory,
+//             review:saveReview,
 
-        })
+//         })
 
-    // const saveProduct=await product.save();
-    await product.save();
+//     // const saveProduct=await product.save();
+//     await product.save();
 
-    res
-    .status(201)
-    .json({
-        status:201,
-        message:"Product add Successfully.........!",
-        productDetail:product
-    })
+//     res
+//     .status(201)
+//     .json({
+//         status:201,
+//         message:"Product add Successfully.........!",
+//         productDetail:product
+//     })
         
-    } catch (error) {
-        console.log(error)
-        res
-        .status(500)
-        .json({
-            status:500,
-            message:"Server side Error.........!",
-            err:error
-        })        
-    }
+//     } catch (error) {
+//         console.log(error)
+//         res
+//         .status(500)
+//         .json({
+//             status:500,
+//             message:"Server side Error.........!",
+//             err:error
+//         })        
+//     }
 
-}
+// }
+export const addproduct = async (req, res, next) => {
+  const { productName, productDescription, category, brand, color, size, stock, price, rating, comment, sku } = req.body;
+  console.log("req.body", req.body);
+
+  try {
+      let images = [];
+      if (req.file) { // Changed from req.files to req.file since we're using single file upload
+          images.push(req.file.path);
+      }
+      console.log("Uploaded Image:", images);
+
+      // Subcategory creation
+      const subCategory = new Subcategories({
+          brand,
+          color,
+          size,
+          stock,
+          price,
+          sku,
+      });
+
+
+      // Review creation
+      const review = new Reviwe({
+          rating,
+          comment,
+      });
+
+      // Product creation
+      const product = new Product({
+          productName,
+          productDescription,
+          category,
+          images,
+          Subcategory: subCategory,
+          review: review,
+      });
+
+      await product.save();
+
+      res.status(201).json({
+          status: 201,
+          message: "Product added successfully!",
+          productDetail: product,
+      });
+
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({
+          status: 500,
+          message: "Server-side error",
+          err: error,
+      });
+  }
+};
+
 
 export const getProductById=async(req,res,next)=>{
     const {id}=req.params;
