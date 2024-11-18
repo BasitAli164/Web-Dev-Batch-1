@@ -15,6 +15,7 @@ export const useProductStore = create((set, get) => ({
 
       const response = await axios.get(`http://localhost:8000/api/product/get?${query.toString()}`);
       set({ products: response.data });
+      console.log("Fetched products:", response.data);
     } catch (error) {
       console.error("Failed to fetch products:", error);
     }

@@ -52,10 +52,20 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app=express();
-app.use(cors({
-    origin:process.env.CORS_ORIGION,
-    credentials:true
-}))
+const allowedOrigins = [
+    'http://localhost:5173',  // Frontend URL
+    'http://localhost:5174'   // Dashboard URL
+  ];
+  
+  app.use(cors({
+    origin: function(origin, callback) {
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    }
+  }));
 app.use("/media", express.static(path.join(__dirname, "media")));
 app.use(express.json({limit:process.env.LIMITS}));
 app.use(express.urlencoded({extended:true,limit:process.env.LIMITS}));

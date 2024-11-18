@@ -87,6 +87,7 @@ export const addproduct = async (req, res, next) => {
           price,
           sku,
       });
+      const savedSubCategory= await subCategory.save();
 
 
       // Review creation
@@ -101,7 +102,7 @@ export const addproduct = async (req, res, next) => {
           productDescription,
           category,
           images,
-          Subcategory: subCategory,
+          productSubcategory: savedSubCategory,
           review: review,
       });
 
@@ -163,6 +164,31 @@ export const getProductById=async(req,res,next)=>{
 
 // Get all products
 
+export const getProductforDashboard = async (req, res, next) => {
+  try {
+    
+const products = await Product.find({})
+  .populate('productSubcategory').populate('productReview')  // Populate Subcategory directly
+ 
+
+console.log("Populated Products:", products);
+
+
+    res.status(200).json({
+      message: "Products retrieved successfully.",
+      status: 200,
+      result: products,
+    });
+  } catch (error) {
+    console.error("Error retrieving products:", error);
+    res.status(500).json({
+      message: "Something went wrong.",
+      status: 500,
+      error: error.message,
+    });
+  }
+};
+
 export const getProduct = async (req, res, next) => {
   try {
     const { size, color } = req.query;
@@ -186,7 +212,11 @@ export const getProduct = async (req, res, next) => {
     // Step 2: Use the subcategory ObjectIds to filter Products
     const products = await Product.find({
       Subcategory: { $in: subCategories.map(sub => sub._id) }
-    }).populate('Subcategory'); // Populate Subcategory to get full details
+    }).populate('productSubcategory'); // Populate Subcategory to get full details
+
+    console.log("Products:", products);
+
+
 
     res.status(200).json({
       message: "Products retrieved successfully.",

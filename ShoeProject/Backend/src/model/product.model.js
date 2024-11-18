@@ -17,11 +17,11 @@ const productSchema=new mongoose.Schema({
         trim:true,
         enum:['men','women']
     },
-    Subcategory:{
+    productSubcategory:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'SubCategory'
+        ref:'ProductSubcategory'
     },
-    review:{
+    productReview:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Reviwe'
     },
