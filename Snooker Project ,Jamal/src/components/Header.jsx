@@ -60,7 +60,7 @@ const Header = () => {
                         open={Boolean(anchorElProfile)}
                         onClose={handleProfileMenuClose}
                     >
-                        <MenuItem onClick={() => navigate('/login')}>Login</MenuItem>
+                        <MenuItem onClick={() => navigate('/lo')}>Login</MenuItem>
                     </Menu>
                 </Box>
 

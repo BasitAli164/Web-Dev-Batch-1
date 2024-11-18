@@ -16,6 +16,6 @@ routerPro.get('/get',getProduct)
 routerPro.get('/fetch',getProductforDashboard)
 
 routerPro.delete('/del/:id',deleteProduct);
-routerPro.put('/update/:id',upload.array("images",10),updateProduct)
+routerPro.put('/update/:id',upload.single('productImage'),updateProduct)
 
 export default routerPro;

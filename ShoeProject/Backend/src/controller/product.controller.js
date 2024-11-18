@@ -1,5 +1,5 @@
 import Product from '../model/product.model.js'
-import Subcategories from '../model/subcategories.model.js'
+import ProductSubcategory from '../model/subcategories.model.js'
 import Reviwe from '../model/reviwe.model.js'
 
 
@@ -79,7 +79,7 @@ export const addproduct = async (req, res, next) => {
       console.log("Uploaded Image:", images);
 
       // Subcategory creation
-      const subCategory = new Subcategories({
+      const subCategory = new ProductSubcategory({
           brand,
           color,
           size,
@@ -107,6 +107,7 @@ export const addproduct = async (req, res, next) => {
       });
 
       await product.save();
+      console.log("product is:",product)
 
       res.status(201).json({
           status: 201,
@@ -125,39 +126,34 @@ export const addproduct = async (req, res, next) => {
 };
 
 
-export const getProductById=async(req,res,next)=>{
-    const {id}=req.params;
-    try {
-        const product=await Product.findById(id).populate('Subcategory').populate("review");
-        if(!product){
-            res
-            .status(404)
-            .json({
-                status:404,
-                message:"Product not Found.........!",
-                })
-        }
-
-        res
-        .status(200)
-        .json({
-            status:200,
-            message:`Product get Successfully by Id: ${id}`,
-            productDetail:product,
-        })
-        
-    } catch (error) {
-        console.log(error)
-        res
-        .status(500)
-        .json({
-            status:500,
-            message:"Server side Error.........!",
-            err:error
-        })        
-        
+export const getProductById = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const product = await Product.findById(id).populate('productSubcategory');
+    
+    if (!product) {
+      return res.status(404).json({
+        status: 404,
+        message: "Product not Found.........!",
+      });  // Use return to stop execution after sending the response
     }
-}
+
+    return res.status(200).json({
+      status: 200,
+      message: `Product get Successfully by Id: ${id}`,
+      productDetail: product,
+    });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: 500,
+      message: "Server side Error.........!",
+      err: error,
+    });
+  }
+};
+
 
 
 
@@ -207,7 +203,8 @@ export const getProduct = async (req, res, next) => {
     }
 
     // Step 1: Find SubCategories that match the conditions
-    const subCategories = await Subcategories.find(subCategoryConditions);
+    const subCategories = await ProductSubcategory.find(subCategoryConditions);
+    console.log("SubCategories:",subCategories)
 
     // Step 2: Use the subcategory ObjectIds to filter Products
     const products = await Product.find({
@@ -233,7 +230,56 @@ export const getProduct = async (req, res, next) => {
   }
 };
 
+// export const getProduct = async (req, res) => {
+//   try {
+//     const { size, color } = req.query;
 
+//     const subCategoryConditions = {};
+//     if (size) {
+//       subCategoryConditions.size = size;
+//     }
+//     if (color) {
+//       subCategoryConditions.color = color;
+//     }
+
+//     // Step 1: Find matching subcategories
+//     const subCategories = await ProductSubcategory.find(subCategoryConditions);
+    
+//     if (!subCategories.length) {
+//       return res.status(404).json({
+//         message: "No matching subcategories found.",
+//         status: 404,
+//       });
+//     }
+
+//     // Step 2: Aggregate products based on subcategories
+//     const products = await Product.aggregate([
+//       { $match: { subcategory: { $in: subCategories.map(sub => sub._id) } } },
+//       { $lookup: { from: 'productsubcategories', localField: 'subcategory', foreignField: '_id', as: 'productSubcategoryDetails' } },
+//       { $unwind: '$productSubcategoryDetails' }
+//     ]);
+
+//     if (!products.length) {
+//       return res.status(404).json({
+//         message: "No products found for the given filters.",
+//         status: 404,
+//       });
+//     }
+
+//     res.status(200).json({
+//       message: "Products retrieved successfully.",
+//       status: 200,
+//       result: products,
+//     });
+//   } catch (error) {
+//     console.error("Error retrieving products:", error);
+//     res.status(500).json({
+//       message: "Something went wrong.",
+//       status: 500,
+//       error: error.message,
+//     });
+//   }
+// };
 
 
   
