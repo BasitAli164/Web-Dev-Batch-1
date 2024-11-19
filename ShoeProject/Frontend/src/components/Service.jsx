@@ -252,7 +252,7 @@ const Service = () => {
 
                 <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="h6">{product.productName}</Typography>
-                  <Typography variant="body2">{product.Subcategory.price} PKR</Typography>
+                  <Typography variant="body2">{product.productSubcategory?.price ?? 'Price Unavailable'} PKR</Typography>
                   <Box display="flex" justifyContent="space-between" mt={1}>
                     <IconButton onClick={() => handleAddToCart(product)} >
                       <AddShoppingCartIcon />

@@ -1,5 +1,5 @@
 import express from 'express'
-import { addproduct, deleteProduct, getProduct, getProductById, updateProduct,getProductforDashboard } from '../controller/product.controller.js'
+import { addproduct, deleteProduct, getProduct, getProductById, updateProduct } from '../controller/product.controller.js'
 import { upload } from '../middlewares/multer.middleware.js';
 import { verifyToken } from '../middlewares/verifyToken.middleware.js';
 
@@ -13,8 +13,6 @@ const routerPro=express.Router()
 routerPro.post('/add', upload.single('productImage'), addproduct);
 routerPro.get('/get/:id',getProductById);
 routerPro.get('/get',getProduct)
-routerPro.get('/fetch',getProductforDashboard)
-
 routerPro.delete('/del/:id',deleteProduct);
 routerPro.put('/update/:id',upload.single('productImage'),updateProduct)
 

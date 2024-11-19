@@ -159,32 +159,6 @@ export const getProductById = async (req, res, next) => {
 
 
 // Get all products
-
-export const getProductforDashboard = async (req, res, next) => {
-  try {
-    
-const products = await Product.find({})
-  .populate('productSubcategory').populate('productReview')  // Populate Subcategory directly
- 
-
-console.log("Populated Products:", products);
-
-
-    res.status(200).json({
-      message: "Products retrieved successfully.",
-      status: 200,
-      result: products,
-    });
-  } catch (error) {
-    console.error("Error retrieving products:", error);
-    res.status(500).json({
-      message: "Something went wrong.",
-      status: 500,
-      error: error.message,
-    });
-  }
-};
-
 export const getProduct = async (req, res, next) => {
   try {
     const { size, color } = req.query;
@@ -208,7 +182,10 @@ export const getProduct = async (req, res, next) => {
 
     // Step 2: Use the subcategory ObjectIds to filter Products
     const products = await Product.find({
-      Subcategory: { $in: subCategories.map(sub => sub._id) }
+      Subcategory: { $in: subCategories.map(sub => {sub._id
+        console.log("Id is ",sub._id)
+      }
+      ) }
     }).populate('productSubcategory'); // Populate Subcategory to get full details
 
     console.log("Products:", products);
@@ -229,57 +206,6 @@ export const getProduct = async (req, res, next) => {
     });
   }
 };
-
-// export const getProduct = async (req, res) => {
-//   try {
-//     const { size, color } = req.query;
-
-//     const subCategoryConditions = {};
-//     if (size) {
-//       subCategoryConditions.size = size;
-//     }
-//     if (color) {
-//       subCategoryConditions.color = color;
-//     }
-
-//     // Step 1: Find matching subcategories
-//     const subCategories = await ProductSubcategory.find(subCategoryConditions);
-    
-//     if (!subCategories.length) {
-//       return res.status(404).json({
-//         message: "No matching subcategories found.",
-//         status: 404,
-//       });
-//     }
-
-//     // Step 2: Aggregate products based on subcategories
-//     const products = await Product.aggregate([
-//       { $match: { subcategory: { $in: subCategories.map(sub => sub._id) } } },
-//       { $lookup: { from: 'productsubcategories', localField: 'subcategory', foreignField: '_id', as: 'productSubcategoryDetails' } },
-//       { $unwind: '$productSubcategoryDetails' }
-//     ]);
-
-//     if (!products.length) {
-//       return res.status(404).json({
-//         message: "No products found for the given filters.",
-//         status: 404,
-//       });
-//     }
-
-//     res.status(200).json({
-//       message: "Products retrieved successfully.",
-//       status: 200,
-//       result: products,
-//     });
-//   } catch (error) {
-//     console.error("Error retrieving products:", error);
-//     res.status(500).json({
-//       message: "Something went wrong.",
-//       status: 500,
-//       error: error.message,
-//     });
-//   }
-// };
 
 
   
