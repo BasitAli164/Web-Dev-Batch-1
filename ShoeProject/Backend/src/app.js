@@ -53,8 +53,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app=express();
 const allowedOrigins = [
-    'http://localhost:5173',  // Frontend URL
-    'http://localhost:5174'   // Dashboard URL
+    'http://localhost:5173',  //  Dashboard URL
+    'http://localhost:5174'   // Frontend URL
   ];
   
   app.use(cors({

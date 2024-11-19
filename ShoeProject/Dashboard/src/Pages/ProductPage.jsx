@@ -80,22 +80,56 @@ const ProductPage = () => {
       header: 'Product Image',
       accessorFn: (row) => {
         console.log("row:", row);
-        // Use optional chaining to safely check for 'images'
-        const images = row?.images ?? []; // If images is undefined or null, fallback to an empty array
-        
+        const images = row?.images ?? [];  // Fallback to an empty array if images is null/undefined
         return images.length > 0 ? images[0] : null;
       },
       Cell: ({ cell }) => {
         const imageUrl = cell.getValue();
         console.log("imageUrl:", imageUrl);
-        
-        return imageUrl ? (
-          <img src={`http://localhost:8000/${imageUrl.replace(/\\/g, '/')}`} alt="Product" width={50} height={50} />
-        ) : (
-          <img src="https://via.placeholder.com/50" alt="No image" width={50} height={50} />
+    
+        // Ensure the image URL uses forward slashes for paths
+        const formattedImageUrl = imageUrl?.replace(/\\/g, '/');
+        console.log("Formatted Image URL:", formattedImageUrl);
+    
+        // Check if the image URL is valid
+        if (!formattedImageUrl) {
+          return (
+            <img 
+              src="https://via.placeholder.com/50" 
+              alt="No image available" 
+              width={50} 
+              height={50} 
+            />
+          );
+        }
+    
+        // If the formatted URL starts with 'media/', prepend the base URL
+        const fullImageUrl = formattedImageUrl.startsWith('media/')
+          ? `http://localhost:8000/${formattedImageUrl}`
+          : formattedImageUrl;
+    
+        // Check the full URL for debugging
+        console.log("Full Image URL:", fullImageUrl);
+    
+        // Attempt to display the image
+        return (
+          <img
+            src={fullImageUrl}
+            alt="Product Image"
+            width={50}
+            height={50}
+            onError={(e) => {
+              // Fallback to a placeholder if the image doesn't load
+              e.target.src = "https://via.placeholder.com/50";
+            }}
+          />
         );
       },
-    },
+    }
+    ,
+    
+    
+    
     
     
     {
@@ -106,7 +140,7 @@ const ProductPage = () => {
       header: 'Stock',
       accessorKey: 'subcategory',
       Cell: ({ row }) => {
-        const subcategory = row.original.Subcategory; // Access subcategory from the product
+        const subcategory = row.original.productSubcategory; // Access subcategory from the product
         return subcategory ? subcategory.stock : 'N/A';  // Handle cases where stock is not available
       },
     },

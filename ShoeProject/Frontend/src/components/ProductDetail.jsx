@@ -122,13 +122,13 @@ const ProductDetail = () => {
           {product.productName || 'Product Title'}
         </Typography>
         <Typography variant="body1" sx={{ marginTop: 1 }}>
-          Price: {product.Subcategory.price} PKR
+          Price: {product.prodcutSubcategory?.price ??'something went wrong'} PKR
         </Typography>
-        <Typography variant="body1" sx={{ position: 'relative' }}>
+        {/* <Typography variant="body1" sx={{ position: 'relative' }}>
           Rating: <Rating sx={{ position: 'absolute' }} name="read-only" value={product.review.rating || 0} readOnly />
-        </Typography>
+        </Typography> */}
         <Typography variant="body1" sx={{ marginTop: 1 }}>
-          Color: {product.Subcategory.color}
+          Color: {product.productSubcategory?.color}
         </Typography>
         <Typography variant="body1" sx={{ marginTop: 1 }}>
           Description: {product.productDescription}
@@ -145,7 +145,7 @@ const ProductDetail = () => {
           </IconButton>
         </Box>
 
-        <Typography variant="body1" sx={{ marginTop: 2 }}>Size: {product.Subcategory.size}</Typography>
+        <Typography variant="body1" sx={{ marginTop: 2 }}>Size: {product.productSubcategory?.size}</Typography>
 
         <Box sx={{ display: 'flex', marginTop: 2 }}>
           <Button
@@ -198,13 +198,13 @@ const ProductDetail = () => {
               <Typography variant="body1">Product Image:</Typography>
               <Box component="img" src={product.images[0]} alt={product.productName} style={{ width: 100, height: 100, marginTop: 5 }} />
               <Typography variant="body1">{product.productName}</Typography>
-              <Typography variant="body1">Price: {product.Subcategory.price} PKR</Typography>
-              <Typography variant="body1">Size: {product.Subcategory.size}</Typography>
+              <Typography variant="body1">Price: {product.productSubcategory?.price} PKR</Typography>
+              <Typography variant="body1">Size: {product.productSubcategory?.size}</Typography>
               <Typography variant="body1">Quantity: {quantity}</Typography>
             </Box>
             <Box>
               <Typography variant="h6">Subtotal</Typography>
-              <Typography variant="body1">{product.Subcategory.price * quantity} PKR</Typography>
+              <Typography variant="body1">{product.productSubcategory?.price * quantity} PKR</Typography>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
                 <Button variant="outlined" sx={{ marginRight: 1 }} onClick={() => navigate(`/service/product/${id}/Cart`, { state: { quantity } })}>
                   Proceed to Cart
