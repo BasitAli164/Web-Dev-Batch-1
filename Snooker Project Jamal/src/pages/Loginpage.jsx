@@ -42,7 +42,7 @@ const LoginPage = () => {
     setTimeout(() => {
       localStorage.removeItem('userDetails');
       navigate('/')
-    }, 200000); // 600000 ms = 10 minutes
+    }, 600000); // 600000 ms = 10 minutes
 
     // Redirect the user to the landing page after successful login
     navigate('/landing');

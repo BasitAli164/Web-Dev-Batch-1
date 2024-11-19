@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Box, Container, Grid, Typography, IconButton } from '@mui/material';
-import { Facebook, Instagram, Twitter, YouTube } from '@mui/icons-material';
+import { Facebook, Instagram, WhatsApp, YouTube } from '@mui/icons-material';  // Import WhatsApp icon from MUI
 import { Link } from 'react-router-dom';  // Import React Router's Link
 
 const Footer = () => {
@@ -42,16 +42,15 @@ const Footer = () => {
           <Grid item xs={12} sm={6} md={3}>
             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Follow Us</Typography>
             <Box sx={{ display: 'flex', gap: 2, marginTop: 2 }}>
-              <IconButton component="a" href="#" target="_blank" color="inherit">
+              <IconButton component="a" href="https://www.facebook.com" target="_blank" color="inherit">
                 <Facebook />
               </IconButton>
-              <IconButton component="a" href="#" target="_blank" color="inherit">
+              <IconButton component="a" href="https://www.instagram.com" target="_blank" color="inherit">
                 <Instagram />
               </IconButton>
-              <IconButton component="a" href="#" target="_blank" color="inherit">
-                <Twitter />
+              <IconButton component="a"href="https://wa.me" target="_blank" color="inherit">
+                <WhatsApp />  {/* Replaced Twitter with WhatsApp */}
               </IconButton>
-              
             </Box>
           </Grid>
 
@@ -59,13 +58,13 @@ const Footer = () => {
           <Grid item xs={12} sm={6} md={3}>
             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Contact Us</Typography>
             <Typography variant="body2" sx={{ marginTop: 2 }}>
-              Email: contact@jamalpoolclub.com
+              Email: jamalhaidery20@gmail.com
             </Typography>
             <Typography variant="body2">
-              Phone: +123 456 7890
+              Phone: +923 555 957243
             </Typography>
             <Typography variant="body2" sx={{ marginTop: 2 }}>
-              Address: 123 Pool St, Fun City, Country
+              Address:  JPC Ali Chock Skardu , Gilgit Baltistan ,Pakistan
             </Typography>
           </Grid>
         </Grid>
