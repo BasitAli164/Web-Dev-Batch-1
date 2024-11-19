@@ -30,7 +30,7 @@ const ContactPage = () => {
       // Close the dialog and redirect to Home page after 2 seconds
       setTimeout(() => {
         setOpenDialog(false); // Close the modal
-        navigate('/'); // Redirect to Home page
+        navigate('/landing'); // Redirect to Home page
       }, 2000);
 
       setTimeout(() => setSubmissionSuccess(null), 3000); // Hide success message after 3 seconds

@@ -5,6 +5,7 @@ import FacebookIcon from '@mui/icons-material/Facebook'; // MUI Facebook icon
 import InstagramIcon from '@mui/icons-material/Instagram'; // MUI Instagram icon
 import TwitterIcon from '@mui/icons-material/Twitter'; // MUI Twitter icon
 import bgimage from '../assets/image/about.jpg'
+import ownerImage from '../assets/image/jamal.jpg'
 
 // Full screen background style for the page with overlay
 const Root = styled(Box)(({ theme }) => ({
@@ -78,7 +79,7 @@ const AboutUs = () => {
             <TeamMemberCard>
               <Avatar
                 alt="John Doe"
-                src="https://example.com/john.jpg" // Replace with the actual image URL
+                src={ownerImage} // Replace with the actual image URL
                 sx={{ width: 100, height: 100, margin: '0 auto', mb: 2 }}
               />
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>John Doe</Typography>
@@ -88,12 +89,13 @@ const AboutUs = () => {
           <Grid item xs={12} md={4}>
             <TeamMemberCard>
               <Avatar
-                alt="Jane Smith"
-                src="https://example.com/jane.jpg" // Replace with the actual image URL
+                alt="Jamal"
+                src={ownerImage}// Replace with the actual image URL
                 sx={{ width: 100, height: 100, margin: '0 auto', mb: 2 }}
               />
-              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Jane Smith</Typography>
-              <Typography variant="body2">Head of Operations</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 'bold',color:"#000" ,opacity:0.7 }}>Jamal </Typography>
+              {/* <Typography variant="body2">Head of Operations</Typography> */}
+              <Typography variant="body2" sx={{color:"#000" ,opacity:0.7}}>Founder & Coach</Typography>
             </TeamMemberCard>
           </Grid>
           <Grid item xs={12} md={4}>

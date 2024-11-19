@@ -1,8 +1,9 @@
 // src/components/Footer.js
 
 import React from 'react';
-import { Box, Container, Grid, Typography, Link, IconButton } from '@mui/material';
+import { Box, Container, Grid, Typography, IconButton } from '@mui/material';
 import { Facebook, Instagram, Twitter, YouTube } from '@mui/icons-material';
+import { Link } from 'react-router-dom';  // Import React Router's Link
 
 const Footer = () => {
   return (
@@ -10,7 +11,6 @@ const Footer = () => {
       sx={{
         backgroundColor: '#111',
         color: '#fff',
-        
       }}
     >
       <Container>
@@ -30,16 +30,10 @@ const Footer = () => {
             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Quick Links</Typography>
             <Grid container direction="column" spacing={1} sx={{ marginTop: 2 }}>
               <Grid item>
-                <Link href="#" color="inherit" variant="body2" sx={{textDecoration:'none'}}>About Us</Link>
+                <Link to="/about" style={{ color: 'inherit', textDecoration: 'none' }}>About Us</Link>
               </Grid>
               <Grid item>
-                <Link href="#" color="inherit" variant="body2" sx={{textDecoration:'none'}}>Events</Link>
-              </Grid>
-              <Grid item>
-                <Link href="#" color="inherit" variant="body2" sx={{textDecoration:'none'}}>Membership</Link>
-              </Grid>
-              <Grid item>
-                <Link href="#" color="inherit" variant="body2" sx={{textDecoration:'none'}}>Contact</Link>
+                <Link to="/contact" style={{ color: 'inherit', textDecoration: 'none' }}>Contact</Link>
               </Grid>
             </Grid>
           </Grid>
@@ -48,7 +42,7 @@ const Footer = () => {
           <Grid item xs={12} sm={6} md={3}>
             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Follow Us</Typography>
             <Box sx={{ display: 'flex', gap: 2, marginTop: 2 }}>
-              <IconButton component="a" href="" target="_blank" color="inherit">
+              <IconButton component="a" href="#" target="_blank" color="inherit">
                 <Facebook />
               </IconButton>
               <IconButton component="a" href="#" target="_blank" color="inherit">
@@ -57,9 +51,7 @@ const Footer = () => {
               <IconButton component="a" href="#" target="_blank" color="inherit">
                 <Twitter />
               </IconButton>
-              <IconButton component="a" href="#" target="_blank" color="inherit">
-                <YouTube />
-              </IconButton>
+              
             </Box>
           </Grid>
 
