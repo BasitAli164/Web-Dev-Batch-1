@@ -15,7 +15,7 @@ const LandingPage = () => {
         backgroundImage: `url(${bgimage1})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
+        // backgroundAttachment: 'fixed',
         color: 'white',
         display: 'flex',
         justifyContent: 'center',

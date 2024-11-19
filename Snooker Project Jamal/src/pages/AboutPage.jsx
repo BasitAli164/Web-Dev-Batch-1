@@ -59,10 +59,10 @@ const MissionSection = styled(Box)(({ theme }) => ({
 // Enhanced About Us Component
 const AboutUs = () => {
   return (
-    <Root sx={{ mt: 8 }}>
+    <Root sx={{  marginTop: '50px'}}>
       {/* Hero Section */}
       <Box sx={{ zIndex: 1, position: 'relative' }}>
-        <Typography variant="h2" sx={{ fontWeight: 'bold', mb: 3 }}>
+        <Typography variant="h2" sx={{ fontWeight: 'bold', mt: 2 }}>
           Welcome to Jamal Pool Club
         </Typography>
         <Typography variant="body1" sx={{ mb: 4, fontSize: '1.2rem' }}>

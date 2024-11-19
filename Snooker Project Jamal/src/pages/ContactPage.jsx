@@ -116,7 +116,7 @@ const ContactPage = () => {
                   <Button
                     type="submit"
                     variant="contained"
-                    color="primary"
+                    color="#17a589"
                     sx={{
                       borderRadius: '50px',
                       padding: '12px 30px',
@@ -124,7 +124,7 @@ const ContactPage = () => {
                       fontWeight: 600,
                       boxShadow: 4,
                       '&:hover': {
-                        backgroundColor: '#004b8c',
+                        backgroundColor: '#17a589',
                       },
                     }}
                   >
