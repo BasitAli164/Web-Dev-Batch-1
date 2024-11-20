@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -18,14 +17,13 @@ import { useCartStore } from '../context/CartContext';
 const CartPage = () => {
   const navigate = useNavigate();
   const { cart, deleteItem } = useCartStore();
-  const location = useLocation();
-  const quantity = location.state;
+  
 
 
 
 
   const getSubtotal = () => {
-    return cart.reduce((acc, item) => acc + (parseFloat(item.Subcategory.price) * item.quantity), 0);
+    return cart.reduce((acc, item) => acc + (parseFloat(item.productSubcategory?.price) * item.quantity), 0);
   };
   console.log("Cart Items", cart); // Log the current cart items
 
@@ -69,7 +67,8 @@ const CartPage = () => {
               <CardMedia
                 component="img"
                 alt={item.productName}
-                image={item.images && item.images.length > 0 ? item.images[0] : '/placeholder.png'}
+                // image={item.images && item.images.length > 0 ? item.images[0] : '/placeholder.png'}
+                src={`http://localhost:8000/${item.images[0]?.replace(/\\/g, '/')}`}
                 sx={{ width: 120, height: 120, objectFit: 'contain', borderRadius: 2 }}
               />
               <CardContent sx={{ flex: 1, paddingLeft: 2 }}>
@@ -77,7 +76,7 @@ const CartPage = () => {
                   {item.productName}
                 </Typography>
                 <Typography variant="body1" sx={{ marginTop: 1 }}>
-                  Price: {item.Subcategory.price} PKR
+                  Price: {item.productSubcategory?.price} PKR
                 </Typography>
                 <Typography variant="body1" sx={{ marginTop: 1 }}>
                   Quantity: {item.quantity}

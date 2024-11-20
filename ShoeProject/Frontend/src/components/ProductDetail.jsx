@@ -87,7 +87,7 @@ const ProductDetail = () => {
         <Grid item xs={12} sx={{ position: 'relative', borderRadius: '5px', overflow: 'hidden', height: '100%', padding: 2 }}>
           <Box
             component="img"
-            src={product.images[0]}
+            src={`http://localhost:8000/${product.images[0]?.replace(/\\/g, '/')}`}
             alt={product.productName}
             sx={{
               width: '100%',
@@ -96,10 +96,8 @@ const ProductDetail = () => {
               borderRadius: '5px',
               transition: 'transform 0.3s',
               padding: 2,
-              fontSize:30,// change after fetching images correctly......
-              marginTop:15,
-              marginLeft:40,
-              textAlign:"center"
+              marginTop: 8, 
+             
             }}
           />
         </Grid>
@@ -196,7 +194,7 @@ const ProductDetail = () => {
           <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
             <Box>
               <Typography variant="body1">Product Image:</Typography>
-              <Box component="img" src={product.images[0]} alt={product.productName} style={{ width: 100, height: 100, marginTop: 5 }} />
+              <Box component="img" src={`http://localhost:8000/${product.images[0]?.replace(/\\/g, '/')}`} alt={product.productName} style={{ width: 100, height: 100, marginTop: 5 }} />
               <Typography variant="body1">{product.productName}</Typography>
               <Typography variant="body1">Price: {product.productSubcategory?.price} PKR</Typography>
               <Typography variant="body1">Size: {product.productSubcategory?.size}</Typography>

@@ -3,23 +3,8 @@ import { Box, Typography, Card, CardMedia, CardContent, Grid, styled, IconButton
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { useProductStore } from '../context/ProductContext.jsx';
-import { BASE_URL } from './BaseUrl.jsx';
 
 // Styled components
-const Thumbnail = styled('img')(({ theme }) => ({
-  width: '50px',
-  height: '50px',
-  objectFit: 'cover',
-  border: '1px solid #ddd',
-  borderRadius: '4px',
-  cursor: 'pointer',
-  marginRight: '8px',
-  transition: 'border-color 0.3s ease',
-  '&:hover': {
-    borderColor: theme.palette.primary.main,
-  },
-}));
-
 const StyledCard = styled(Card)(({ theme, isHovered }) => ({
   transition: 'transform 0.3s ease, box-shadow 0.3s ease',
   position: 'relative',
@@ -75,17 +60,15 @@ const CustomSwitch = styled('div')(({ theme, isMenSelected }) => ({
 const Service = () => {
   const { products, fetchData } = useProductStore();
   const [isMenSelected, setIsMenSelected] = useState(true);
-  const [hoveredImage, setHoveredImage] = useState({});
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   // Get the size and color from URL parameters or default to empty
   const selectedSize = searchParams.get('size') || '';
   const selectedColor = searchParams.get('color') || '';
 
   const colors = ['Grey', 'Black', 'Beige', 'Blue', 'Red', 'White', 'Gray', 'Purple'];
-  const productDetail = products.result; // Assuming `products.result` is an array of product data
-  console.log("proudct detail is :",productDetail)
+  const productDetail = products.result;
 
   // Fetch data initially and on any filter change
   useEffect(() => {
@@ -93,38 +76,23 @@ const Service = () => {
   }, [selectedSize, selectedColor]);
 
   // Filter products based on the selected category and availability of size/color
- const filteredProducts = Array.isArray(productDetail)
-  ? productDetail.filter(product => {
+  const filteredProducts = Array.isArray(productDetail)
+    ? productDetail.filter(product => {
       const subcategory = product.Subcategory || {};
-
-      // // Log product details for debugging
-      // console.log("Product:", product.productName);
-      // console.log("Product Size:", subcategory.size, "Selected Size:", selectedSize);
-      // console.log("Product Color:", subcategory.color, "Selected Color:", selectedColor);
-      // console.log("Product Category:", product.category, "Selected Category:", isMenSelected ? 'men' : 'women');
-      
       // Case-insensitive and null-safe comparison for size
-      const sizeMatches = selectedSize 
+      const sizeMatches = selectedSize
         ? subcategory.size && subcategory.size.toString().toLowerCase() === selectedSize.toLowerCase()
-        : true;  // If no size filter, ignore size comparison
-
+        : true;
       // Case-insensitive and null-safe comparison for color
-      const colorMatches = selectedColor 
+      const colorMatches = selectedColor
         ? subcategory.color && subcategory.color.toString().toLowerCase() === selectedColor.toLowerCase()
-        : true;  // If no color filter, ignore color comparison
-
+        : true;
       // Match category based on selected gender
       const categoryMatches = product.category === (isMenSelected ? 'men' : 'women');
-
       // Return product if all conditions are met
       return categoryMatches && sizeMatches && colorMatches;
-  })
-  : [];
-
-
-
-    console.log("filter products" ,filteredProducts)
-
+    })
+    : [];
 
   // Update search parameters in the URL and trigger data fetch with filters
   const updateSearchParams = (newSize, newColor) => {
@@ -139,11 +107,6 @@ const Service = () => {
   const resetFilters = () => {
     setSearchParams({});
     fetchData(); // Fetch all products without filters
-  };
-
-  // Handle thumbnail click to show a specific image on hover
-  const handleThumbnailClick = (productId, image) => {
-    setHoveredImage(prevState => ({ ...prevState, [productId]: image }));
   };
 
   // Navigate to product details page
@@ -211,7 +174,7 @@ const Service = () => {
         <Box mt={20} mr={10} display="flex" justifyContent="flex-end">
           <button onClick={resetFilters} style={{
             padding: '10px 20px',
-            backgroundColor: '#dc3545', 
+            backgroundColor: '#dc3545',
             color: 'white',
             border: 'none',
             borderRadius: '50px',
@@ -240,23 +203,21 @@ const Service = () => {
 
         <Grid container spacing={2}>
           {filteredProducts.map(product => (
+            console.log("product image is", product.images),
             <Grid item xs={12} sm={6} md={4} key={product._id}>
               <StyledCard isHovered={true} onClick={() => navigate(`/service/product/${product._id}`)}>
-              <CardMedia
-  component="img"
-  height="200"
-  // image={hoveredImage[product._id] || `${BASE_URL}/media/${product.images}`} // Directly use product.images as a string
-  image='http://localhost:8000/media/1732062415031.webp'
-  
-  
-  alt={product.productName}
-/>
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={`http://localhost:8000/${product.images[0]?.replace(/\\/g, '/')}`} // Replace backslashes with forward slashes
+                  alt={product.productName}
+                />
 
                 <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="h6">{product.productName}</Typography>
                   <Typography variant="body2">{product.productSubcategory?.price ?? 'Price Unavailable'} PKR</Typography>
                   <Box display="flex" justifyContent="space-between" mt={1}>
-                    <IconButton onClick={() => handleAddToCart(product)} >
+                    <IconButton onClick={() => handleAddToCart(product)}>
                       <AddShoppingCartIcon />
                     </IconButton>
                   </Box>
