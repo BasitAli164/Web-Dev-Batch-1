@@ -124,7 +124,7 @@ const Service = () => {
 
 
     console.log("filter products" ,filteredProducts)
-    
+
 
   // Update search parameters in the URL and trigger data fetch with filters
   const updateSearchParams = (newSize, newColor) => {
@@ -245,7 +245,9 @@ const Service = () => {
               <CardMedia
   component="img"
   height="200"
-  image={hoveredImage[product._id] || `${BASE_URL}/media/${product.images[0]}`}
+  // image={hoveredImage[product._id] || `${BASE_URL}/media/${product.images}`} // Directly use product.images as a string
+  image='http://localhost:8000/media/1732062415031.webp'
+  
   
   alt={product.productName}
 />

@@ -5,7 +5,7 @@ const generateSKU = () => {
   return 'SKU-' + Math.random().toString(36).substr(2, 9).toUpperCase();
 };
 
-const AddProductComponent = ({ open, onClose }) => {
+const AddProductComponent = ({ open,  onClose,  }) => {
   const [formData, setFormData] = useState({
     productName: '',
     productDescription: '',

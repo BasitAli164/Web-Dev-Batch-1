@@ -23,7 +23,7 @@ const ProductPage = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [selectedProduct]);
 
   // Fetch products using axios
   const fetchProducts = async () => {
@@ -53,15 +53,23 @@ const ProductPage = () => {
     setOpenUpdateDialog(true);
   };
 
-  const handleDelete = (productId) => {
-    setSelectedProduct(products.find((p) => p._id === productId));  // Changed to _id
-    setOpenDeleteDialog(true);
+  const handleDelete = async (productId) => {
+    try {
+      const res = await axios.delete(`http://localhost:8000/api/product/del/${productId}`)
+        .then((res) => {
+          console.log("Deleted product:", res.data);
+          fetchProducts();  // Reload products after successful deletion
+        });
+      setOpenDeleteDialog(false); // Close the dialog after successful deletion
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
   };
 
   const columns = [
     {
       header: 'Action',
-      // Remove accessorKey, render custom buttons directly in the Cell function
+      // Custom cell with action buttons (View, Edit, Delete)
       Cell: ({ row }) => (
         <>
           <IconButton onClick={() => handleView(row.original._id)} title="View Product">
@@ -77,87 +85,70 @@ const ProductPage = () => {
       ),
     },
     {
-      header: 'Product Image',
+      header: 'Product',
       accessorFn: (row) => {
-        console.log("row:", row);
-        const images = row?.images ?? [];  // Fallback to an empty array if images is null/undefined
-        return images.length > 0 ? images[0] : null;
+        // Handle missing or empty images array
+        const images = row?.images ?? [];
+        const imageUrl = images.length > 0 ? images[0] : null; // Get the first image
+        const productName = row?.productName ?? 'N/A'; // Get product name
+  
+        return { imageUrl, productName }; // Return both imageUrl and productName
       },
       Cell: ({ cell }) => {
-        const imageUrl = cell.getValue();
-        console.log("imageUrl:", imageUrl);
-    
-        // Ensure the image URL uses forward slashes for paths
-        const formattedImageUrl = imageUrl?.replace(/\\/g, '/');
-        console.log("Formatted Image URL:", formattedImageUrl);
-    
-        // Check if the image URL is valid
-        if (!formattedImageUrl) {
-          return (
-            <img 
-              src="https://via.placeholder.com/50" 
-              alt="No image available" 
-              width={50} 
-              height={50} 
-            />
-          );
-        }
-    
-        // If the formatted URL starts with 'media/', prepend the base URL
-        const fullImageUrl = formattedImageUrl.startsWith('media/')
+        const { imageUrl, productName } = cell.getValue(); // Destructure the data
+  
+        const formattedImageUrl = imageUrl?.replace(/\\/g, '/'); // Correct backslashes for URL format
+        const fullImageUrl = formattedImageUrl?.startsWith('media/')
           ? `http://localhost:8000/${formattedImageUrl}`
           : formattedImageUrl;
-    
-        // Check the full URL for debugging
-        console.log("Full Image URL:", fullImageUrl);
-    
-        // Attempt to display the image
+          console.log(fullImageUrl)
+
+  
         return (
-          <img
-            src={fullImageUrl}
-            alt="Product Image"
-            width={50}
-            height={50}
-            onError={(e) => {
-              // Fallback to a placeholder if the image doesn't load
-              e.target.src = "https://via.placeholder.com/50";
-            }}
-          />
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <img
+              src={fullImageUrl || 'https://via.placeholder.com/50'}
+              alt={productName}
+              width={50}
+              height={50}
+              style={{ marginRight: 8 }} // Space between image and name
+              onError={(e) => e.target.src = "https://via.placeholder.com/50"} // Fallback in case of broken image
+            />
+            <span>{productName}</span>
+          </div>
         );
       },
-    }
-    ,
-    
-    
-    
-    
-    
-    {
-      header: 'Product Name',
-      accessorKey: 'productName',  // Ensure that 'productName' exists on each row
-    },
-    {
-      header: 'Stock',
-      accessorKey: 'subcategory',
-      Cell: ({ row }) => {
-        const subcategory = row.original.productSubcategory; // Access subcategory from the product
-        return subcategory ? subcategory.stock : 'N/A';  // Handle cases where stock is not available
-      },
+
     },
     {
       header: 'Category',
-      accessorKey: 'category',  // Assuming 'category' exists on each product
-      Cell: ({ cell }) => cell.getValue() || 'N/A',  // Provide fallback for undefined values
+      accessorKey: 'category', // Ensure 'category' exists in each row
     },
+    
+    
+    {
+      header: 'Stock',
+      accessorFn: (row) => row?.productSubcategory?.stock, // Access stock from product.productSubcategory
+    },
+    {
+      header: 'Price',
+      accessorFn: (row) => row?.productSubcategory?.price, // Access stock from product.productSubcategory
+      
+    },
+
+    
+   
   ];
+  
+  
 
   return (
     <div
       style={{
         display: 'flex',
         flexDirection: 'column',
-        marginLeft: '150px', 
-        marginTop: '100px', 
+        marginLeft: '201px',
+        marginTop: '100px',
         height: '100vh',
         overflow: 'auto',
       }}
@@ -199,17 +190,24 @@ const ProductPage = () => {
       )}
 
       {/* Dialogs for add, view, update, delete */}
-      <AddProductComponent open={openAddDialog} onClose={() => setOpenAddDialog(false)} />
+      <AddProductComponent
+        open={openAddDialog}
+        onClose={() => {
+          fetchProducts();  // Fetch products after closing the dialog
+          setOpenAddDialog(false);  // Close the AddProductComponent dialog
+        }}
+      />
       <ViewProductById open={openViewDialog} onClose={() => setOpenViewDialog(false)} product={selectedProduct} />
       <UpdateProductById open={openUpdateDialog} onClose={() => setOpenUpdateDialog(false)} product={selectedProduct} />
       <DeleteProductById
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
         product={selectedProduct}
-        setProducts={setProducts} 
+        setProducts={setProducts}
       />
     </div>
   );
 };
+
 
 export default ProductPage;
