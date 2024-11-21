@@ -39,7 +39,7 @@ const Sidebar = ({ isCollapsed, toggleCollapse, isDrawerOpen, toggleDrawer }) =>
       open={isDrawerOpen}
       sx={{
         '& .MuiDrawer-paper': {
-          width: isCollapsed ? 90 : 200,
+          width: isCollapsed ? 90 : 190,
           backgroundColor: '#1976d2',  // Matching blue color
           color: '#fff',
           border: 'none',

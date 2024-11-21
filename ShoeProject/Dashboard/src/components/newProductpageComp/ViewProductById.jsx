@@ -1,17 +1,31 @@
-// src/components/ViewProductById.js
 import React from 'react';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button, Typography, Grid, Box } from '@mui/material';
 
 const ViewProductById = ({ open, onClose, product }) => {
+  // Check if product exists
+  if (!product) {
+    return (
+      <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+        <DialogTitle>Product Details</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">Product not found</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} color="primary">Close</Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }
+
   // Generate the full image URL if available
-  console.log("product is : in view by id:",product)
+  // console.log("Product in ViewProductById:", product);
   const productImageUrl = product?.images?.[0]?.replace(/\\/g, '/'); // Handle possible backslashes in image path
-  const fullImageUrl = productImageUrl?.startsWith('media/') 
-    ? `http://localhost:8000/${productImageUrl}` 
+  const fullImageUrl = productImageUrl?.startsWith('media/')
+    ? `http://localhost:8000/${productImageUrl}`
     : productImageUrl;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Product Details</DialogTitle>
       <DialogContent>
         {/* Product Image */}
@@ -37,12 +51,12 @@ const ViewProductById = ({ open, onClose, product }) => {
           </Grid>
           <Grid item xs={6}>
             <Typography variant="body1">
-              {/* <strong>Price:</strong> {product.productSubcategory?.price?.toFixed(2) || 'N/A'} */}
+              <strong>Price:</strong> {product.productSubcategory?.price?.toFixed(2) || 'N/A'}
             </Typography>
           </Grid>
           <Grid item xs={6}>
             <Typography variant="body1">
-              {/* <strong>Stock:</strong> {product.productSubcategory?.stock || 'N/A'} */}
+              <strong>Stock:</strong> {product.productSubcategory?.stock || 'N/A'}
             </Typography>
           </Grid>
           <Grid item xs={6}>
@@ -52,22 +66,22 @@ const ViewProductById = ({ open, onClose, product }) => {
           </Grid>
           <Grid item xs={6}>
             <Typography variant="body1">
-              {/* <strong>Brand:</strong> {product.productSubcategory?.brand || 'N/A'} */}
+              <strong>Brand:</strong> {product.productSubcategory?.brand || 'N/A'}
             </Typography>
           </Grid>
           <Grid item xs={6}>
             <Typography variant="body1">
-              {/* <strong>Size:</strong> {product.productSubcategory?.size || 'N/A'} */}
+              <strong>Size:</strong> {product.productSubcategory?.size || 'N/A'}
             </Typography>
           </Grid>
           <Grid item xs={6}>
             <Typography variant="body1">
-              {/* <strong>Color:</strong> {product.productSubcategory?.color || 'N/A'} */}
+              <strong>Color:</strong> {product.productSubcategory?.color || 'N/A'}
             </Typography>
           </Grid>
           <Grid item xs={6}>
             <Typography variant="body1">
-              {/* <strong>SKU:</strong> {product.productSubcategory?.sku || 'N/A'} */}
+              <strong>SKU:</strong> {product.productSubcategory?.sku || 'N/A'}
             </Typography>
           </Grid>
           <Grid item xs={6}>

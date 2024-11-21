@@ -5,7 +5,9 @@ import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { useProductStore } from '../context/ProductContext.jsx';
 
 // Styled components
-const StyledCard = styled(Card)(({ theme, isHovered }) => ({
+const StyledCard = styled(Card, {
+  shouldForwardProp: (prop) => prop !== 'isHovered',  // Prevent `isHovered` from being forwarded to the DOM element
+})(({ theme, isHovered }) => ({
   transition: 'transform 0.3s ease, box-shadow 0.3s ease',
   position: 'relative',
   cursor: 'pointer',
@@ -15,6 +17,7 @@ const StyledCard = styled(Card)(({ theme, isHovered }) => ({
     zIndex: 1,
   },
 }));
+
 
 const CustomSwitch = styled('div')(({ theme, isMenSelected }) => ({
   display: 'flex',
@@ -77,22 +80,20 @@ const Service = () => {
 
   // Filter products based on the selected category and availability of size/color
   const filteredProducts = Array.isArray(productDetail)
-    ? productDetail.filter(product => {
-      const subcategory = product.Subcategory || {};
-      // Case-insensitive and null-safe comparison for size
+  ? productDetail.filter(product => {
+      const subcategory = product.productSubcategory || {}; // Ensure correct path to subcategory
       const sizeMatches = selectedSize
         ? subcategory.size && subcategory.size.toString().toLowerCase() === selectedSize.toLowerCase()
         : true;
-      // Case-insensitive and null-safe comparison for color
       const colorMatches = selectedColor
         ? subcategory.color && subcategory.color.toString().toLowerCase() === selectedColor.toLowerCase()
         : true;
-      // Match category based on selected gender
       const categoryMatches = product.category === (isMenSelected ? 'men' : 'women');
-      // Return product if all conditions are met
       return categoryMatches && sizeMatches && colorMatches;
     })
-    : [];
+  : [];
+
+
 
   // Update search parameters in the URL and trigger data fetch with filters
   const updateSearchParams = (newSize, newColor) => {
@@ -203,7 +204,6 @@ const Service = () => {
 
         <Grid container spacing={2}>
           {filteredProducts.map(product => (
-            console.log("product image is", product.images),
             <Grid item xs={12} sm={6} md={4} key={product._id}>
               <StyledCard isHovered={true} onClick={() => navigate(`/service/product/${product._id}`)}>
                 <CardMedia

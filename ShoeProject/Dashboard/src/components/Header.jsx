@@ -5,7 +5,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 const Header = ({ isCollapsed }) => (
   <AppBar
     sx={{
-      width: isCollapsed ? 'calc(100% - 90px)' : 'calc(100% - 200px)',
+      width: isCollapsed ? 'calc(100% - 90px)' : 'calc(100% - 190px)',
       transition: 'width 0.3s',
       backgroundColor: '#1976d2',  // Matching blue color
     }}

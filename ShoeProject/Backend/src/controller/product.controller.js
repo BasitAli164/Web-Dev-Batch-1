@@ -162,8 +162,9 @@ export const getProductById = async (req, res, next) => {
 export const getProduct = async (req, res, next) => {
   try {
     const { size, color } = req.query;
+    console.log("Size and Color:", size, color);
 
-    // Initialize conditions
+    // Initialize conditions for filtering ProductSubcategory
     const subCategoryConditions = {};
 
     // Add condition for size if it's provided
@@ -176,22 +177,24 @@ export const getProduct = async (req, res, next) => {
       subCategoryConditions.color = color;
     }
 
-    // Step 1: Find SubCategories that match the conditions
+    // Step 1: Find ProductSubcategories that match the size and color
     const subCategories = await ProductSubcategory.find(subCategoryConditions);
-    console.log("SubCategories:",subCategories)
 
-    // Step 2: Use the subcategory ObjectIds to filter Products
+    // If no subcategories found, return empty result
+    if (subCategories.length === 0) {
+      return res.status(200).json({
+        message: "No products found for the given filters.",
+        status: 200,
+        result: [],
+      });
+    }
+
+    // Step 2: Find Products that match the subcategory ObjectIds
     const products = await Product.find({
-      Subcategory: { $in: subCategories.map(sub => {sub._id
-        console.log("Id is ",sub._id)
-      }
-      ) }
-    }).populate('productSubcategory'); // Populate Subcategory to get full details
+      productSubcategory: { $in: subCategories.map(sub => sub._id) }
+    }).populate('productSubcategory'); // Populate productSubcategory to get full details
 
-    console.log("Products:", products);
-
-
-
+    // Step 3: Return the filtered products
     res.status(200).json({
       message: "Products retrieved successfully.",
       status: 200,
@@ -206,6 +209,7 @@ export const getProduct = async (req, res, next) => {
     });
   }
 };
+
 
 
   

@@ -242,10 +242,10 @@ const BookingPage = () => {
                   required={service !== 'Bar & Refreshments'}
                   disabled={service === 'Bar & Refreshments'}
                 >
-                  <MenuItem value="Snooker">Snooker</MenuItem>
-                  <MenuItem value="Pool">Pool</MenuItem>
-                  <MenuItem value="9-Ball">9-Ball</MenuItem>
-                  <MenuItem value="8-Ball">8-Ball</MenuItem>
+                  <MenuItem value="6-Ball">6-Ball</MenuItem>
+                  <MenuItem value="1-RedBall">1-RedBall</MenuItem>
+                  <MenuItem value="Century">Century</MenuItem>
+               
                 </Select>
               </FormControl>
             </Grid>

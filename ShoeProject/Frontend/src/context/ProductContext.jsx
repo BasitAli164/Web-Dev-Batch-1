@@ -8,6 +8,7 @@ export const useProductStore = create((set, get) => ({
   fetchData: async (size = null, color = '') => {
 
     try {
+      // console.log("color is",color,"size is",size)
       // Construct query parameters based on size and color
       const query = new URLSearchParams();
       if (size !== null) query.append('size', size.toString()); // Ensure size is a string for the query
@@ -15,7 +16,7 @@ export const useProductStore = create((set, get) => ({
 
       const response = await axios.get(`http://localhost:8000/api/product/get?${query.toString()}`);
       set({ products: response.data });
-      console.log("Fetched products:", response.data);
+      // console.log("Fetched products:", response.data.result);
     } catch (error) {
       console.error("Failed to fetch products:", error);
     }

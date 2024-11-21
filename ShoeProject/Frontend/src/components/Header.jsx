@@ -114,24 +114,24 @@ const Header = () => {
           >
             <AccountCircle />
           </IconButton>
-
           <Menu
-            anchorEl={anchorElProfile}
-            open={Boolean(anchorElProfile)}
-            onClose={handleProfileMenuClose}
-            ref={menuRef}
-          >
-            {user && token ? (
-              [
-                <MenuItem key="profile" onClick={() => { handleProfileMenuClose(); navigate('/profile'); }}>Profile</MenuItem>,
-                <MenuItem key="logout" onClick={handleLogout}>Logout</MenuItem>
-              ]
-            ) : (
-              [
-              <MenuItem onClick={handleLogin}>Login</MenuItem>
-              ]
-            )}
-          </Menu>
+  anchorEl={anchorElProfile}
+  open={Boolean(anchorElProfile)}
+  onClose={handleProfileMenuClose}
+  ref={menuRef}
+>
+  {user && token ? (
+    [
+      <MenuItem key="profile" onClick={() => { handleProfileMenuClose(); navigate('/profile'); }}>Profile</MenuItem>,
+      <MenuItem key="logout" onClick={handleLogout}>Logout</MenuItem>
+    ]
+  ) : (
+    <MenuItem key="login" onClick={handleLogin}>Login</MenuItem>
+  )}
+</Menu>
+
+
+
         </Box>
       </Toolbar>
 

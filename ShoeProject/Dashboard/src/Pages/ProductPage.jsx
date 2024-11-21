@@ -30,7 +30,7 @@ const ProductPage = () => {
     setLoading(true);
     try {
       const res = await axios.get('http://localhost:8000/api/product/get');
-      console.log("Fetched Data:", res.data);
+      // console.log("Fetched Data:", res.data);
       if (res.data && res.data.result) {
         setProducts(res.data.result); // Set products from the API response
       } else {
@@ -101,7 +101,6 @@ const ProductPage = () => {
         const fullImageUrl = formattedImageUrl?.startsWith('media/')
           ? `http://localhost:8000/${formattedImageUrl}`
           : formattedImageUrl;
-          console.log(fullImageUrl)
 
   
         return (
@@ -147,7 +146,7 @@ const ProductPage = () => {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        marginLeft: '201px',
+        marginLeft: '185px',
         marginTop: '100px',
         height: '100vh',
         overflow: 'auto',
@@ -191,6 +190,8 @@ const ProductPage = () => {
 
       {/* Dialogs for add, view, update, delete */}
       <AddProductComponent
+      
+      
         open={openAddDialog}
         onClose={() => {
           fetchProducts();  // Fetch products after closing the dialog

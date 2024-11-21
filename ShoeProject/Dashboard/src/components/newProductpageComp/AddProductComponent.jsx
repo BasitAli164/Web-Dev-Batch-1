@@ -118,8 +118,8 @@ const AddProductComponent = ({ open,  onClose,  }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Add New Product</DialogTitle>
+    <Dialog  open={open} onClose={onClose}>
+      <DialogTitle >Add New Product</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
