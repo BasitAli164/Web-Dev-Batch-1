@@ -214,46 +214,56 @@ export const getProduct = async (req, res, next) => {
 
   
 export const updateProduct = async (req, res, next) => {
-    const { name, description, category, ...others } = req.body;
-  
-    try {
-      // Find product by ID and update it
-      const product = await Product.findById(req.params.id);
-      if (!product) {
-        return res.status(404).json({
-          message: "Product not found.",
-          status: 404
-        });
-      }
-  
-      // Handle image update if provided
-      let images = product.images;
-      if (req.files) {
-        images = req.files.map(file => file.path);
-      }
-  
-      product.name = name || product.name;
-      product.description = description || product.description;
-      product.category = category || product.category;
-      product.images = images;
-      Object.assign(product, others);
-  
-      await product.save();
-  
-      res.status(200).json({
-        message: "Product updated successfully.",
-        status: 200,
-        result: product
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({
-        message: "Something went wrong.",
-        status: 500,
-        error: error.message
+  try {
+    // Extract the fields from the body
+    const { productName, productDescription, category, brand, size, color, stock, price, sku } = req.body;
+
+    // Find the product by ID
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({
+        message: "Product not found.",
+        status: 404
       });
     }
-  };
+
+    // Handle image update if provided
+    let images = product.images;
+    if (req.files) {
+      images = req.files.map(file => file.path); // Assuming you are using multer or similar middleware
+    }
+
+    // Update product fields, fall back to existing values if not provided
+    product.productName = productName || product.productName;
+    product.productDescription = productDescription || product.productDescription;
+    product.category = category || product.category;
+    product.brand = brand || product.brand;
+    product.size = size || product.size;
+    product.color = color || product.color;
+    product.stock = stock || product.stock;
+    product.price = price || product.price;
+    product.sku = sku || product.sku;
+    product.images = images; // Update images if any
+
+    // Save the updated product
+    await product.save();
+    console.log("Updated product:", product);
+
+    res.status(200).json({
+      message: "Product updated successfully.",
+      status: 200,
+      result: product
+    });
+  } catch (error) {
+    console.error("Error updating product:", error);
+    res.status(500).json({
+      message: "Something went wrong.",
+      status: 500,
+      error: error.message
+    });
+  }
+};
+
 
 export const deleteProduct=async(req,res,next)=>{
     const {id}=req.params;

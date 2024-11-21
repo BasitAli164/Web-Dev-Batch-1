@@ -4,7 +4,6 @@ import { MaterialReactTable } from 'material-react-table'; // Import MRT
 import AddProductComponent from '../components/newProductpageComp/AddProductComponent';
 import ViewProductById from '../components/newProductpageComp/ViewProductById';
 import UpdateProductById from '../components/newProductpageComp/UpdateProductById';
-import DeleteProductById from '../components/newProductpageComp/DeleteProductById';
 import useProductStore from '../stores/useProductStore';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
@@ -199,13 +198,12 @@ const ProductPage = () => {
         }}
       />
       <ViewProductById open={openViewDialog} onClose={() => setOpenViewDialog(false)} product={selectedProduct} />
-      <UpdateProductById open={openUpdateDialog} onClose={() => setOpenUpdateDialog(false)} product={selectedProduct} />
-      <DeleteProductById
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-        product={selectedProduct}
-        setProducts={setProducts}
-      />
+      <UpdateProductById open={openUpdateDialog} onClose={() =>{
+          fetchProducts();  // Fetch products after closing the dialog
+         setOpenUpdateDialog(false)}} product={selectedProduct}
+         
+         />
+      
     </div>
   );
 };
