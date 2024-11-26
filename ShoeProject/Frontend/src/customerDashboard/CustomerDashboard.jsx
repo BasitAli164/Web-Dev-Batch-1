@@ -29,7 +29,7 @@ const CustomerDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
   const { logout,user } = useAuthStore();
-console.log("user detail is:",user.image)
+// console.log("user detail is:",user.image)
   const handleToggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -72,7 +72,7 @@ console.log("user detail is:",user.image)
         {/* User Info */}
         {isSidebarOpen && (
           <Box sx={{ textAlign: 'center', mb: 4 }}>
-            <Avatar sx={{ width: 80, height: 80, margin: 'auto', mb: 2 }} src={`http://localhost:8000/${user.image[0]?.replace(/\\/g, '/')}`} />
+            <Avatar sx={{ width: 80, height: 80, margin: 'auto', mb: 2 }} src={`http://localhost:8000/${user.image?.[0]?.replace(/\\/g, '/')}`} />
             <Typography variant="h6">Basit Ali</Typography>
           </Box>
         )}
@@ -122,10 +122,11 @@ console.log("user detail is:",user.image)
           flexGrow: 1,
           p: 4,
           transition: 'margin-left 0.3s',
-          ml: isSidebarOpen ? 0 : 6// Adjust content margin when sidebar is closed
+          ml: isSidebarOpen ? 0 : 6,// Adjust content margin when sidebar is closed
+          position:"relative"
         }}
       >
-        <Paper elevation={3} sx={{ p: 3, borderRadius: 3, backgroundColor: '#ffffff' }}>
+        <Paper elevation={3} sx={{ p: 1, borderRadius: 3, backgroundColor: '#ffffff',position:"relative",top:"40px" }}>
           {renderSection()}
         </Paper>
       </Box>

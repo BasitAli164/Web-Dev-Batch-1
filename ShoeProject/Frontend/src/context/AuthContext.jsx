@@ -26,6 +26,11 @@ export const useAuthStore = create((set, get) => ({
             get().logout();
         }
     },
+    // Update user data (setUser function)
+    setUser: (newUserData) => {
+        set({ user: newUserData });
+    },
+
 
     // Login function
     login: async (data) => {

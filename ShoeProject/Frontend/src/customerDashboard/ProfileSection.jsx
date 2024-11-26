@@ -1,25 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Card, CardContent, Avatar, Button, Divider } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import PhoneIcon from '@mui/icons-material/Phone';
 import HomeIcon from '@mui/icons-material/Home';
 import EmailIcon from '@mui/icons-material/Email';
-import image from '../../public/image/personal/my.png'
 import { useAuthStore } from '../context/AuthContext';
+import ProfileEditDialog from './ProfileEditDialog'; // Importing the Profile Edit Dialog
 
 const ProfileSection = () => {
-  // Simulating a loading state
-  const isLoading = false; // Change this to true to see the skeleton loader
-  const { user } = useAuthStore();  
+  const { user, setUser } = useAuthStore();  // Assume you have a context or state management for the user
+  const [openDialog, setOpenDialog] = useState(false); // State to handle dialog visibility
+
+  useEffect(() => {
+    // Fetch the updated user data if necessary
+    // You can implement a refetch here when the user data is updated externally.
+  }, [user]);
+
+  const handleEditProfile = () => {
+    setOpenDialog(true); // Open the dialog when editing the profile
+  };
 
   return (
-    <Box sx={{ width: '100%', mx: 'auto', mt: 5,}}>
-      {/* Make the card transparent */}
+    <Box sx={{ width: '100%', mx: 'auto' }}>
       <Card sx={{ p: 3, borderRadius: 3, boxShadow: 'none', backgroundColor: 'transparent' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
           <Avatar
             alt="User Profile"
-            src={`http://localhost:8000/${user.image[0]?.replace(/\\/g, '/')}`} // Replace with real user avatar URL
+            src={`http://localhost:8000/${user.image?.[0]?.replace(/\\/g, '/')}`} // Assuming user has an image field
             sx={{ width: 100, height: 100, mr: 3, boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)' }}
           />
           <Box>
@@ -32,7 +39,6 @@ const ProfileSection = () => {
 
         <CardContent sx={{ padding: 0 }}>
           <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2 }}>Personal Information</Typography>
-          
           <Box sx={{ mb: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
               <EmailIcon sx={{ color: '#1abc9c', mr: 1 }} />
@@ -50,11 +56,6 @@ const ProfileSection = () => {
 
           <Divider sx={{ my: 2 }} />
 
-          {/* <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2 }}>Bio</Typography>
-          <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-            A brief bio or description about the user can be placed here. This could include interests, hobbies, or professional background.
-          </Typography> */}
-
           <Button
             variant="contained"
             startIcon={<EditIcon />}
@@ -68,11 +69,15 @@ const ProfileSection = () => {
               textTransform: 'none',
               mt: 2,
             }}
+            onClick={handleEditProfile}
           >
             Edit Profile
           </Button>
         </CardContent>
       </Card>
+
+      {/* Profile Edit Dialog */}
+      <ProfileEditDialog open={openDialog} setOpen={setOpenDialog} user={user} setUser={setUser} />
     </Box>
   );
 };

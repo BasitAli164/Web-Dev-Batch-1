@@ -154,7 +154,7 @@ export const updateUserbyId = async (req, res, next) => {
         message: `User with ID ${id} not found.`,
       });
     }
-
+console.log("updatedUser", updatedUser)
     return res.status(200).json({
       status: 200,
       message: `Successfully updated the user with ID: ${id}`,
