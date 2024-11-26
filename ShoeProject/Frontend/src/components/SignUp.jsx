@@ -1,4 +1,3 @@
-// src/components/SignUp.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -11,7 +10,7 @@ import {
   CardHeader,
   InputAdornment,
 } from '@mui/material';
-import { Person, Email, Phone,LocationCity, Visibility, VisibilityOff } from '@mui/icons-material'; // Import icons
+import { Person, Email, Phone, LocationCity, Visibility, VisibilityOff, CameraAlt } from '@mui/icons-material'; // Import icons
 import axios from 'axios'; // Import Axios
 
 const SignUp = () => {
@@ -21,7 +20,8 @@ const SignUp = () => {
   const [password, setPassword] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
-
+  const [image, setImage] = useState(null); // State to store image file
+  const [imageName, setImageName] = useState(''); // State to store image file name
 
   const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
   const [errorMessage, setErrorMessage] = useState('');
@@ -33,18 +33,36 @@ const SignUp = () => {
     setPassword('');
     setPhoneNumber('');
     setAddress('');
+    setImage(null); // Reset image state
+    setImageName(''); // Reset image name state
   }, []);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file); // Set the selected image file
+      setImageName(file.name); // Set the image name to display
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const formData = new FormData();
+    formData.append('userName', name);
+    formData.append('email', email);
+    formData.append('password', password);
+    formData.append('phoneNumber', phoneNumber);
+    formData.append('address', address);
+    if (image) {
+      formData.append('image', image); // Append image if available
+    }
+
     try {
-      const response = await axios.post('http://localhost:8000/api/user/register', {
-        userName: name,
-        email,
-        password,
-        phoneNumber,
-        address,
+      const response = await axios.post('http://localhost:8000/api/user/register', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Set the header for form-data
+        },
       });
 
       if (response.status === 201) {
@@ -54,6 +72,8 @@ const SignUp = () => {
         setPassword('');
         setAddress('');
         setPhoneNumber('');
+        setImage(null); // Reset image
+        setImageName(''); // Reset image name
         navigate('/login'); // Redirect to login page after successful signup
       }
     } catch (error) {
@@ -90,7 +110,7 @@ const SignUp = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              placeholder="Enter your name" // Added placeholder
+              placeholder="Enter your name"
               sx={{ marginBottom: 3 }}
               InputProps={{
                 endAdornment: (
@@ -109,7 +129,7 @@ const SignUp = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="Enter your email" // Added placeholder
+              placeholder="Enter your email"
               sx={{ marginBottom: 3 }}
               InputProps={{
                 endAdornment: (
@@ -128,7 +148,7 @@ const SignUp = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              placeholder="Enter your password" // Added placeholder
+              placeholder="Enter your password"
               sx={{ marginBottom: 3 }}
               InputProps={{
                 endAdornment: (
@@ -148,7 +168,7 @@ const SignUp = () => {
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
               required
-              placeholder="Enter your Phone Number" // Added placeholder
+              placeholder="Enter your Phone Number"
               sx={{ marginBottom: 3 }}
               InputProps={{
                 endAdornment: (
@@ -166,7 +186,7 @@ const SignUp = () => {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               required
-              placeholder="Enter your Address" // Added placeholder
+              placeholder="Enter your Address"
               sx={{ marginBottom: 3 }}
               InputProps={{
                 endAdornment: (
@@ -177,6 +197,28 @@ const SignUp = () => {
               }}
             />
 
+            {/* File upload field for image */}
+            <Button
+              variant="outlined"
+              component="label"
+              fullWidth
+              sx={{ marginBottom: 3 }}
+            >
+              Upload Image
+              <input
+                type="file"
+                hidden
+                onChange={handleImageChange}
+                accept="image/*" // Limit to image files
+              />
+            </Button>
+
+            {/* Display image file name */}
+            {imageName && (
+              <Typography variant="body2" sx={{ textAlign: 'center' }}>
+                {imageName}
+              </Typography>
+            )}
 
             <Button
               variant="contained"

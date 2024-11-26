@@ -3,22 +3,29 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
 export const register = async (req, res) => {
-  const { userName, email, password, address,phoneNumber, ...rest } = req.body
+  const { userName, email, password, address,phoneNumber } = req.body
   console.log("userName", userName, "email", email, "password", password, "address", address, "phoneNumber", phoneNumber)
   const salt = await bcrypt.genSalt(10)
   const handlePass = await bcrypt.hash(password, salt)
   try {
+    let image = [];
+    if (req.file) { // Changed from req.files to req.file since we're using single file upload
+        image.push(req.file.path);
+    }
+    console.log("Uploaded Image:", image);
+
     const user = new User({
       userName,
       email,
       password: handlePass,
      address,
       phoneNumber,
-      ...rest
+    image
 
 
     })
     await user.save();
+    console.log(" after save the user", user)
     res.status(201).json({
       status: true,
       message: "Register Successfully........!",
@@ -85,6 +92,7 @@ export const viewUserbyId = async (req, res, next) => {
   const { id } = req.params;
   try {
     const user = await User.findById(id).populate('wishList');
+    console.log("user", user)
     if (!user) {
       return res.status(404).json({
         status: 404,

@@ -18,6 +18,9 @@ const userSchema=new mongoose.Schema({
         uniqe:true,
         trim:true
     },
+    image:{
+        type:[String],
+    },
     phoneNumber:{
         type:String,
         // required:true,

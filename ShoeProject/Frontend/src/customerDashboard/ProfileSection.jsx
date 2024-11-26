@@ -11,7 +11,6 @@ const ProfileSection = () => {
   // Simulating a loading state
   const isLoading = false; // Change this to true to see the skeleton loader
   const { user } = useAuthStore();  
-  console.log("user in profile section",user);
 
   return (
     <Box sx={{ width: '100%', mx: 'auto', mt: 5,}}>
@@ -20,7 +19,7 @@ const ProfileSection = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
           <Avatar
             alt="User Profile"
-            src={image} // Replace with real user avatar URL
+            src={`http://localhost:8000/${user.image[0]?.replace(/\\/g, '/')}`} // Replace with real user avatar URL
             sx={{ width: 100, height: 100, mr: 3, boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)' }}
           />
           <Box>

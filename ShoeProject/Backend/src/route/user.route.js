@@ -1,10 +1,11 @@
 import express from 'express'
 import { addWishlist, delUserbyId, login, register, removeWishlist, updateUserbyId, viewAllUser, viewUserbyId } from '../controller/user.controller.js'
+import { upload } from '../middlewares/multer.middleware.js'
 
 
 const router=express.Router()
 
-router.post('/register',register)
+router.post('/register',upload.single('image'),register)
 router.post('/login',login)
 router.get('/get/:id',viewUserbyId)
 router.get('/get',viewAllUser)

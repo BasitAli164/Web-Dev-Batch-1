@@ -28,8 +28,8 @@ const CustomerDashboard = () => {
   const [selectedSection, setSelectedSection] = useState('Profile');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
-
+  const { logout,user } = useAuthStore();
+console.log("user detail is:",user.image)
   const handleToggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -72,7 +72,7 @@ const CustomerDashboard = () => {
         {/* User Info */}
         {isSidebarOpen && (
           <Box sx={{ textAlign: 'center', mb: 4 }}>
-            <Avatar sx={{ width: 80, height: 80, margin: 'auto', mb: 2 }} src={image} />
+            <Avatar sx={{ width: 80, height: 80, margin: 'auto', mb: 2 }} src={`http://localhost:8000/${user.image[0]?.replace(/\\/g, '/')}`} />
             <Typography variant="h6">Basit Ali</Typography>
           </Box>
         )}
