@@ -88,7 +88,7 @@ export const login = async (req, res) => {
   }
 }
 
-export const viewUserbyId = async (req, res, next) => {
+export const viewCustomerbyId = async (req, res, next) => {
   const { id } = req.params;
   try {
     const user = await User.findById(id).populate('wishList');
@@ -113,7 +113,7 @@ export const viewUserbyId = async (req, res, next) => {
   }
 };
 
-export const delUserbyId = async (req, res, next) => {
+export const delCustomerbyId = async (req, res, next) => {
   const { id } = req.params;
   try {
     const delUser = await User.findByIdAndDelete(id); // await is necessary to wait for the result
@@ -138,7 +138,7 @@ export const delUserbyId = async (req, res, next) => {
 };
 
 
-export const updateUserbyId = async (req, res, next) => {
+export const updateCustomerbyId = async (req, res, next) => {
   const { id } = req.params;
   const updateData = req.body; // Data to update the user with
 
@@ -169,7 +169,7 @@ console.log("updatedUser", updatedUser)
   }
 };
 
-export const viewAllUser = async (req, res, next) => {
+export const viewAllCustomer = async (req, res, next) => {
   try {
     const allUser = await User.find().populate('wishList')
     if (!allUser) {

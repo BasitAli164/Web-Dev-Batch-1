@@ -1,5 +1,5 @@
 import express from 'express'
-import { addWishlist, delUserbyId, login, register, removeWishlist, updateUserbyId, viewAllUser, viewUserbyId } from '../controller/customer.controller.js'
+import { addWishlist, delCustomerbyId, login, register, removeWishlist, updateCustomerbyId, viewAllCustomer, viewCustomerbyId } from '../controller/customer.controller.js'
 import { upload } from '../middlewares/multer.middleware.js'
 
 
@@ -7,10 +7,10 @@ const router=express.Router()
 
 router.post('/register',upload.single('image'),register)
 router.post('/login',login)
-router.get('/get/:id',viewUserbyId)
-router.get('/get',viewAllUser)
-router.delete('/del/:id',delUserbyId)
-router.put('/update/:id',updateUserbyId)
+router.get('/get/:id',viewCustomerbyId)
+router.get('/get',viewAllCustomer)
+router.delete('/del/:id',delCustomerbyId)
+router.put('/update/:id',updateCustomerbyId)
 
 
 export default  router
