@@ -16,7 +16,7 @@ export const useAuthStore = create((set, get) => ({
         if (!token || !userId) return;
 
         try {
-            const response = await axios.get(`http://localhost:8000/api/user/get/${userId}`, {
+            const response = await axios.get(`http://localhost:8000/api/customer/get/${userId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             set({ user: response.data.userDetail });

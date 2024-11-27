@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import User from '../model/user.model.js'
+import User from '../model/customer.model.js'
 export const addWishlist = async (req, res, next) => {
   const { userId, productId } = req.params;
 

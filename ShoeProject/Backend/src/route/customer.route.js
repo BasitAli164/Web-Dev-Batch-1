@@ -1,5 +1,5 @@
 import express from 'express'
-import { addWishlist, delUserbyId, login, register, removeWishlist, updateUserbyId, viewAllUser, viewUserbyId } from '../controller/user.controller.js'
+import { addWishlist, delUserbyId, login, register, removeWishlist, updateUserbyId, viewAllUser, viewUserbyId } from '../controller/customer.controller.js'
 import { upload } from '../middlewares/multer.middleware.js'
 
 

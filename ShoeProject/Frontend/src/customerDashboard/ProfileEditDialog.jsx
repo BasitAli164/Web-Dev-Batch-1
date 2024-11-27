@@ -21,7 +21,7 @@ const ProfileEditDialog = ({ open, setOpen, user, setUser }) => {
   const handleSaveUpdate = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.put(`http://localhost:8000/api/user/update/${user._id}`, updatedUser);
+      const response = await axios.put(`http://localhost:8000/api/customer/update/${user._id}`, updatedUser);
       setUser(response.data.
         updatedUser
         ); // Update the global user state with the updated user data

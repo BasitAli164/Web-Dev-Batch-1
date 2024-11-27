@@ -70,7 +70,7 @@ const Service = () => {
   const selectedSize = searchParams.get('size') || '';
   const selectedColor = searchParams.get('color') || '';
 
-  const colors = ['Grey', 'Black', 'Beige', 'Blue', 'Red', 'White', 'Gray', 'Purple'];
+  const colors = ['Grey', 'Black', 'Beige', 'Blue', 'Red', 'White', 'Green'];
   const productDetail = products.result;
 
   // Fetch data initially and on any filter change
@@ -124,7 +124,7 @@ const Service = () => {
         <Typography variant="h6" mt={2}>Sizes</Typography>
         <Typography>Select Your Size.....</Typography>
         <Box display="flex" flexWrap="wrap" mb={2} m={5}>
-          {['5', '6', '7', '8', '9', '10', '11', '12', '13'].map(size => (
+          {['1', '2', '3', '4', '5', '6', '7', '8', '9','10'].map(size => (
             <Box
               key={size}
               sx={{
@@ -162,11 +162,11 @@ const Service = () => {
                   border: '1px solid #ddd',
                   marginLeft: '22px',
                   marginRight: '22px',
-                  marginTop: '15px',
+                  marginTop: '20px',
                   marginBottom: '15px'
                 }}
               />
-              <Typography variant="body2" style={{ color: selectedColor === color ? color : 'inherit' }}>{color}</Typography>
+              <Typography variant="body1" style={{ color: selectedColor === color ? color : 'inherit' }}>{color}</Typography>
             </Box>
           ))}
         </Box>

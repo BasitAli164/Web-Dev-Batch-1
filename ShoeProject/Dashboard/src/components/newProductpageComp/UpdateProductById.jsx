@@ -50,7 +50,6 @@ const UpdateProductById = ({ open, onClose, product }) => {
       setImagePreview(imageUrl);
     }
   }, [product]);
-  
 
   // Handle form field changes
   const handleChange = (e) => {
@@ -202,35 +201,56 @@ const UpdateProductById = ({ open, onClose, product }) => {
 
             <Grid item xs={12} sm={6}>
               <TextField
+                select
                 label="Brand"
-                fullWidth
                 value={formData.brand}
                 onChange={handleChange}
                 name="brand"
+                fullWidth
                 margin="normal"
-              />
+              >
+                <MenuItem value="Nike">Nike</MenuItem>
+                <MenuItem value="Adidas">Adidas</MenuItem>
+                <MenuItem value="Puma">Puma</MenuItem>
+                <MenuItem value="Reebok">Reebok</MenuItem>
+                <MenuItem value="Vans">Vans</MenuItem>
+              </TextField>
             </Grid>
 
             <Grid item xs={12} sm={6}>
               <TextField
+                select
                 label="Size"
-                fullWidth
                 value={formData.size}
                 onChange={handleChange}
                 name="size"
+                fullWidth
                 margin="normal"
-              />
+              >
+                {[1, 2, 3, 4, 5].map((size) => (
+                  <MenuItem key={size} value={size}>
+                    {size}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Grid>
 
             <Grid item xs={12} sm={6}>
               <TextField
+                select
                 label="Color"
-                fullWidth
                 value={formData.color}
                 onChange={handleChange}
                 name="color"
+                fullWidth
                 margin="normal"
-              />
+              >
+                <MenuItem value="Black">Black</MenuItem>
+                <MenuItem value="Blue">Blue</MenuItem>
+                <MenuItem value="Red">Red</MenuItem>
+                <MenuItem value="White">White</MenuItem>
+                <MenuItem value="Green">Green</MenuItem>
+              </TextField>
             </Grid>
 
             <Grid item xs={12} sm={6}>
