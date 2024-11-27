@@ -3,70 +3,7 @@ import ProductSubcategory from '../model/subcategories.model.js'
 import Reviwe from '../model/reviwe.model.js'
 
 
-// export const addproduct=async(req,res,next)=>{
-//     const {productName,productDescription,category,brand,color,size,stock,price,rating,comment}=req.body;
-//     console.log("req.body",req.body)
-    
-    
-//     try {
-//     let images=[];
-//         if(req.files){
-
-//             images=req.files.map((file)=>file.path);
-//         }
-// console.log("images",req.files)    
-//     const subCategory=new Subcategories({
-//             brand,
-//             color,
-//             size,
-//             stock,
-//             price,
-//             sku:req.body.sku,
-//         })
-//     const savedSubCategory=await subCategory.save();
-
-//         const review=new Reviwe({
-//             rating,
-//             comment,
-//         })
-//     const saveReview=await review.save();
-
-      
-
-
-//     const product=new Product({
-//             productName,
-//             productDescription,
-//             category,
-//             images,
-//             Subcategory:savedSubCategory,
-//             review:saveReview,
-
-//         })
-
-//     // const saveProduct=await product.save();
-//     await product.save();
-
-//     res
-//     .status(201)
-//     .json({
-//         status:201,
-//         message:"Product add Successfully.........!",
-//         productDetail:product
-//     })
-        
-//     } catch (error) {
-//         console.log(error)
-//         res
-//         .status(500)
-//         .json({
-//             status:500,
-//             message:"Server side Error.........!",
-//             err:error
-//         })        
-//     }
-
-// }
+// Add Product
 export const addproduct = async (req, res, next) => {
   const { productName, productDescription, category, brand, color, size, stock, price, rating, comment, sku } = req.body;
   console.log("req.body", req.body);
@@ -153,10 +90,6 @@ export const getProductById = async (req, res, next) => {
     });
   }
 };
-
-
-
-
 
 // Get all products
 export const getProduct = async (req, res, next) => {
