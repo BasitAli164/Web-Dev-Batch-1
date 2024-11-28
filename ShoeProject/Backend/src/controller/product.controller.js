@@ -188,6 +188,7 @@ export const updateProduct = async (req, res, next) => {
     // Save the updated product
     const updatedProduct = await product.save();
     console.log("Updated Product:", updatedProduct);
+    console.log("Updated Product Subcategory:", updatedProduct.productSubcategory);
 
     res.status(200).json({ message: "Product updated successfully.", result: updatedProduct });
   } catch (error) {
