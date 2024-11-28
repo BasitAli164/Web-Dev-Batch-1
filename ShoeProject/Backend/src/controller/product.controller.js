@@ -148,48 +148,47 @@ export const getProduct = async (req, res, next) => {
 export const updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params; // Get product ID from the URL params
-    console.log("ID:", id);
     const updatedData = req.body; // Get updated data from the request body
-    console.log("req.body:", updatedData);
 
-    // Find the product by ID and update it
+    // Find the product by ID
     const product = await Product.findById(id);
 
     if (!product) {
       return res.status(404).json({ message: "Product not found." });
     }
 
-    // Update product fields
-    product.productName = updatedData.productName || product.productName;
-    product.productDescription = updatedData.productDescription || product.productDescription;
-    product.category = updatedData.category || product.category;
+    // Prepare the update object
+    let updateFields = {
+      productName: updatedData.productName || product.productName,
+      productDescription: updatedData.productDescription || product.productDescription,
+      category: updatedData.category || product.category,
+    };
 
-    // Ensure productSubcategory exists before updating
-    if (!product.productSubcategory) {
-      product.productSubcategory = {}; // Initialize if not present
+    // Ensure productSubcategory exists in the update object and set its values
+    if (updatedData.productSubcategory) {
+      updateFields.productSubcategory = {
+        ...product.productSubcategory, // Retain existing values
+        ...updatedData.productSubcategory, // Apply new values
+      };
     }
 
-    product.productSubcategory.brand = updatedData.brand || product.productSubcategory.brand;
-    product.productSubcategory.size = updatedData.size || product.productSubcategory.size;
-    product.productSubcategory.color = updatedData.color || product.productSubcategory.color;
-    product.productSubcategory.stock = updatedData.stock || product.productSubcategory.stock;
-    product.productSubcategory.price = updatedData.price || product.productSubcategory.price;
-    product.productSubcategory.sku = updatedData.sku || product.productSubcategory.sku;
-
-    // Handle image upload if necessary
+    // Handle image update if a file or image URL is provided
     if (req.file) {
       const imagePath = req.file.path; // Path where the image is saved
-      product.images = [imagePath]; // Update image
+      updateFields.images = [imagePath]; // Update the image path
     } else if (updatedData.productImage) {
-      // If an image URL is provided in the request body, update it
-      product.images = [updatedData.productImage];
+      updateFields.images = [updatedData.productImage]; // If image URL is provided, update it
     }
 
-    // Save the updated product
-    const updatedProduct = await product.save();
-    console.log("Updated Product:", updatedProduct);
-    console.log("Updated Product Subcategory:", updatedProduct.productSubcategory);
+    // Use $set to apply the updates in the database
+    const updatedProduct = await Product.findByIdAndUpdate(id, { $set: updateFields }, { new: true });
 
+    // If no product was updated, return an error response
+    if (!updatedProduct) {
+      return res.status(404).json({ message: "Product not found or could not be updated." });
+    }
+
+    // Respond with the updated product
     res.status(200).json({ message: "Product updated successfully.", result: updatedProduct });
   } catch (error) {
     console.error("Error updating product:", error);
