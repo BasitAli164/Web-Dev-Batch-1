@@ -28,11 +28,16 @@ const UpdateProductById = ({ open, onClose, product }) => {
     if (product) {
       console.log("Product data is:", product);
   
-      // Assuming your image URL is relative, prepend the base URL
+      // Check if the product image already includes the base URL
       const baseUrl = 'http://localhost:8000/'; // Base URL for your images
-      const imageUrl = product?.images[0] ? `${baseUrl}${product.images[0]}` : null;
+      let imageUrl = product?.images[0];
   
-      // Set form data from the received product details
+      // If the image URL doesn't already start with the base URL, prepend it
+      if (imageUrl && !imageUrl.startsWith(baseUrl)) {
+        imageUrl = `${baseUrl}${imageUrl}`;
+      }
+  
+      // Set the form data with the corrected image URL
       setFormData({
         productName: product.productName || '',
         productDescription: product.productDescription || '',
@@ -50,6 +55,7 @@ const UpdateProductById = ({ open, onClose, product }) => {
       setImagePreview(imageUrl);
     }
   }, [product]);
+  
 
   // Handle form field changes
   const handleChange = (e) => {
@@ -76,6 +82,7 @@ const UpdateProductById = ({ open, onClose, product }) => {
 
     setUploadStatus(null); // Reset any previous status messages
   };
+  
 
   // Form validation
   const validateForm = () => {
